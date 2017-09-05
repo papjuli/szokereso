@@ -16,26 +16,34 @@ class Board {
         result.append(", \"timeSeconds\": ");
         result.append(timeSeconds);
         result.append(", \"letters\": [");
+        boolean firstRow = true;
         for (String[] row : letters) {
-            result.append("[");
+            result.append(firstRow ? "[" : ",[");
+            firstRow = false;
+            boolean firstLetter = true;
             for (String letter : row) {
-                result.append("\"");
+                result.append(firstLetter ? "\"" : ",\"");
+                firstLetter = false;
                 result.append(letter);
-                result.append("\",");
+                result.append("\"");
             }
-            result.append("],");
+            result.append("]");
         }
         result.append("], words: [");
+        boolean firstWord = true;
         for (List<Pair<Integer, Integer>> word : words) {
-            result.append("[");
+            result.append(firstWord ? "[" : ",[");
+            firstWord = false;
+            boolean firstCoord = true;
             for (Pair<Integer, Integer> coord : word) {
-                result.append("[");
+                result.append(firstCoord ? "[" : ",[");
+                firstCoord = false;
                 result.append(coord.getKey());
                 result.append(",");
                 result.append(coord.getValue());
-                result.append("],");
+                result.append("]");
             }
-            result.append("],");
+            result.append("]");
         }
         result.append("]}");
         return result.toString();
