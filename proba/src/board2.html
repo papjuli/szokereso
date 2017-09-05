@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <title>Board2</title>
     <script>
+
+
+    letters = [["É", "S", "T"], ["K", "Ő", "M"], ["A", "L", "I"]];
+    words = ["ÉS", "ŐS", "KÉS", "KÉSŐ", "SŐT", "KŐ", "LŐ", "TŐ", "TŐKÉS", "LAK", "MI"];
+
     prevrow = -999;
     prevcol = -999;
     word = "";
@@ -20,13 +25,22 @@
       }
       prevrow = row;
       prevcol = col;
+      guess(word);
+    }
+    function guess(word) {
       document.getElementById("result").innerHTML = word;
+      for (i = 0; i<word.length-1; ++i) {
+        suffix = word.slice(i, word.length);
+        console.log(suffix);
+        if (words.indexOf(suffix) != -1) {
+          document.getElementById("found").innerHTML += " " + suffix;
+        }
+      }
     }
     function mywhite(x) {
       x.style.backgroundColor = "white";
     }
     function setLetters() {
-      letters = [["É", "S", "T"], ["K", "Ő", "M"], ["A", "L", "I"]];
       divs = document.getElementById("board").getElementsByTagName("div");
       for (i=0; i<divs.length; ++i) {
         elem = divs[i];
@@ -71,6 +85,8 @@
 <script>setLetters();</script>
 
 <div id="result"></div>
+
+<div id="found"></div>
 
 </body>
 </html>
