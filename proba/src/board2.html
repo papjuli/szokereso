@@ -4,18 +4,23 @@
     <meta charset="UTF-8">
     <title>Board2</title>
     <script>
-    function myred(x) {
-      x.style.backgroundColor = "red";
+    prevrow = -999;
+    prevcol = -999;
+    word = "";
+    function myred(letter) {
+      letter.style.backgroundColor = "red";
+
     }
     function mywhite(x) {
       x.style.backgroundColor = "white";
     }
     function setLetters() {
       letters = [["É", "S"], ["K", "Ő"]];
-      for (x=0; x<2; ++x) {
-        for (y=0; y<2; ++y) {
-          document.getElementById("letter" + x + "," + y).innerHTML = letters[x][y];
-        }
+      divs = document.getElementById("board").getElementsByTagName("div");
+      for (i=0; i<divs.length; ++i) {
+        elem = divs[i];
+        console.log(elem.innerHTML);
+        elem.innerHTML = letters[elem.dataset.row][elem.dataset.col];
       }
     }
 </script>
@@ -40,11 +45,11 @@
 </style>
 <body>
 
-<div class="board2">
-    <div class="letter" id="letter0,0" onmouseover="myred(this)" onmouseout="mywhite(this)">A</div>
-    <div class="letter" id="letter1,0" onmouseover="myred(this)" onmouseout="mywhite(this)">B</div>
-    <div class="letter" id="letter0,1" onmouseover="myred(this)" onmouseout="mywhite(this)">C</div>
-    <div class="letter" id="letter1,1" onmouseover="myred(this)" onmouseout="mywhite(this)">D</div>
+<div class="board2" id="board">
+    <div class="letter" data-row=0 data-col=0 onmouseover="myred(this)" onmouseout="mywhite(this)">A</div>
+    <div class="letter" data-row=0 data-col=1 onmouseover="myred(this)" onmouseout="mywhite(this)">B</div>
+    <div class="letter" data-row=1 data-col=0 onmouseover="myred(this)" onmouseout="mywhite(this)">C</div>
+    <div class="letter" data-row=1 data-col=1 onmouseover="myred(this)" onmouseout="mywhite(this)">D</div>
 </div>
 
 <script>setLetters();</script>
