@@ -16,6 +16,7 @@ class Board {
         result.append(", \"timeSeconds\": ");
         result.append(timeSeconds);
         result.append(", \"letters\": [");
+
         boolean firstRow = true;
         for (String[] row : letters) {
             result.append(firstRow ? "[" : ",[");
@@ -30,6 +31,7 @@ class Board {
             result.append("]");
         }
         result.append("], words: [");
+
         boolean firstWord = true;
         for (List<Pair<Integer, Integer>> word : words) {
             result.append(firstWord ? "[" : ",[");
@@ -45,6 +47,7 @@ class Board {
             }
             result.append("]");
         }
+
         result.append("]}");
         return result.toString();
     }

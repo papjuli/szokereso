@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Board2</title>
+    <script>
+    function myred(x) {
+      x.style.backgroundColor = "red";
+    }
+    function mywhite(x) {
+      x.style.backgroundColor = "white";
+    }
+</script>
+</head>
+<style>
+    body {
+      margin: 40px;
+    }
+    .board2 {
+      display: grid;
+      grid-template-columns: 100px 100px;
+      grid-gap: 30px;
+    }
+
+    .letter {
+      border-style: solid;
+      border-color: black;
+      padding: 10px;
+      line-height: 60px;
+      text-align: center;
+    }
+</style>
+<body>
+
+<div class="board2">
+    <div class="letter" id="0" onmouseover="myred(this)" onmouseout="mywhite(this)">A</div>
+    <div class="letter" id="1" onmouseover="myred(this)" onmouseout="mywhite(this)">B</div>
+    <div class="letter" id="2" onmouseover="myred(this)" onmouseout="mywhite(this)">C</div>
+    <div class="letter" id="3" onmouseover="myred(this)" onmouseout="mywhite(this)">D</div>
+</div>
+
+<div id="result"></div>
+
+</body>
+</html>
