@@ -10,6 +10,14 @@
     function mywhite(x) {
       x.style.backgroundColor = "white";
     }
+    function setLetters() {
+      letters = [["É", "S"], ["K", "Ő"]];
+      for (x=0; x<2; ++x) {
+        for (y=0; y<2; ++y) {
+          document.getElementById("letter" + x + "," + y).innerHTML = letters[x][y];
+        }
+      }
+    }
 </script>
 </head>
 <style>
@@ -33,11 +41,13 @@
 <body>
 
 <div class="board2">
-    <div class="letter" id="0" onmouseover="myred(this)" onmouseout="mywhite(this)">A</div>
-    <div class="letter" id="1" onmouseover="myred(this)" onmouseout="mywhite(this)">B</div>
-    <div class="letter" id="2" onmouseover="myred(this)" onmouseout="mywhite(this)">C</div>
-    <div class="letter" id="3" onmouseover="myred(this)" onmouseout="mywhite(this)">D</div>
+    <div class="letter" id="letter0,0" onmouseover="myred(this)" onmouseout="mywhite(this)">A</div>
+    <div class="letter" id="letter1,0" onmouseover="myred(this)" onmouseout="mywhite(this)">B</div>
+    <div class="letter" id="letter0,1" onmouseover="myred(this)" onmouseout="mywhite(this)">C</div>
+    <div class="letter" id="letter1,1" onmouseover="myred(this)" onmouseout="mywhite(this)">D</div>
 </div>
+
+<script>setLetters();</script>
 
 <div id="result"></div>
 
