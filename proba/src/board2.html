@@ -9,13 +9,24 @@
     word = "";
     function myred(letter) {
       letter.style.backgroundColor = "red";
-
+      row = letter.dataset.row;
+      col = letter.dataset.col;
+      dist = (prevrow-row)*(prevrow-row)+(prevcol-col)*(prevcol-col);
+      if (dist == 0) return;
+      if ((prevrow-row)*(prevrow-row)+(prevcol-col)*(prevcol-col) <= 2) {
+        word = word + letter.innerHTML;
+      } else {
+        word = letter.innerHTML;
+      }
+      prevrow = row;
+      prevcol = col;
+      document.getElementById("result").innerHTML = word;
     }
     function mywhite(x) {
       x.style.backgroundColor = "white";
     }
     function setLetters() {
-      letters = [["É", "S"], ["K", "Ő"]];
+      letters = [["É", "S", "T"], ["K", "Ő", "M"], ["A", "L", "I"]];
       divs = document.getElementById("board").getElementsByTagName("div");
       for (i=0; i<divs.length; ++i) {
         elem = divs[i];
@@ -31,7 +42,7 @@
     }
     .board2 {
       display: grid;
-      grid-template-columns: 100px 100px;
+      grid-template-columns: 100px 100px 100px;
       grid-gap: 30px;
     }
 
@@ -46,10 +57,15 @@
 <body>
 
 <div class="board2" id="board">
-    <div class="letter" data-row=0 data-col=0 onmouseover="myred(this)" onmouseout="mywhite(this)">A</div>
-    <div class="letter" data-row=0 data-col=1 onmouseover="myred(this)" onmouseout="mywhite(this)">B</div>
-    <div class="letter" data-row=1 data-col=0 onmouseover="myred(this)" onmouseout="mywhite(this)">C</div>
-    <div class="letter" data-row=1 data-col=1 onmouseover="myred(this)" onmouseout="mywhite(this)">D</div>
+    <div class="letter" data-row=0 data-col=0 onmouseover="myred(this)" onmouseout="mywhite(this)"></div>
+    <div class="letter" data-row=0 data-col=1 onmouseover="myred(this)" onmouseout="mywhite(this)"></div>
+    <div class="letter" data-row=0 data-col=2 onmouseover="myred(this)" onmouseout="mywhite(this)"></div>
+    <div class="letter" data-row=1 data-col=0 onmouseover="myred(this)" onmouseout="mywhite(this)"></div>
+    <div class="letter" data-row=1 data-col=1 onmouseover="myred(this)" onmouseout="mywhite(this)"></div>
+    <div class="letter" data-row=1 data-col=2 onmouseover="myred(this)" onmouseout="mywhite(this)"></div>
+    <div class="letter" data-row=2 data-col=0 onmouseover="myred(this)" onmouseout="mywhite(this)"></div>
+    <div class="letter" data-row=2 data-col=1 onmouseover="myred(this)" onmouseout="mywhite(this)"></div>
+    <div class="letter" data-row=2 data-col=2 onmouseover="myred(this)" onmouseout="mywhite(this)"></div>
 </div>
 
 <script>setLetters();</script>
