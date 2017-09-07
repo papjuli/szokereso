@@ -1,3 +1,5 @@
+package papjuli.szokereso;
+
 import java.util.ArrayList;
 import java.util.List;
 

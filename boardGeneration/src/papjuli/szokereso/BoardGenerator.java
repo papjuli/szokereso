@@ -1,18 +1,50 @@
+package papjuli.szokereso;
+
+import java.io.*;
+import java.net.URL;
 import java.util.*;
 
 public class BoardGenerator {
     private ArrayList<String> vocab;
-    private String[] alphabet;
+    String[] alphabet;
     private double[] letterFreqs;
     private Random random;
     private static int[] nextRowOffset = new int[] {-1, -1, 0, 1, 1, 1, 0, -1};
     private static int[] nextColOffset = new int[] {0, 1, 1, 1, 0, -1, -1, -1};
+
+    BoardGenerator(File file) throws IOException {
+        this(readVocabulary(file));
+    }
 
     BoardGenerator(ArrayList<String> vocabulary) {
         vocabulary.sort(Comparator.naturalOrder());
         this.vocab = vocabulary;
         this.getLetterFreqs();
         this.random = new Random();
+    }
+
+    Board generateBoard(int size, int timeSeconds) {
+        while (true) {
+            Board board = new Board();
+            board.size = size;
+            board.timeSeconds = timeSeconds;
+            board.letters = new String[size][size];
+            for (int row = 0; row < size; row++) {
+                for (int col = 0; col < size; col++) {
+                    board.letters[row][col] = getRandomLetter();
+                }
+            }
+            boolean covered = solveBoard(board);
+            if (covered) return board;
+        }
+    }
+
+    private static ArrayList<String> readVocabulary(File file) throws IOException {
+        ArrayList<String> words = new ArrayList<>();
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            br.lines().forEach(words::add);
+        }
+        return words;
     }
 
     private void getLetterFreqs() {
@@ -39,20 +71,6 @@ public class BoardGenerator {
         }
     }
 
-    Board generateBoard(int size, int timeSeconds) {
-        Board board = new Board();
-        board.size = size;
-        board.timeSeconds = timeSeconds;
-        board.letters = new String[size][size];
-        for (int row = 0; row < size; row++) {
-            for (int col = 0; col < size; col++) {
-                board.letters[row][col] = getRandomLetter();
-            }
-        }
-        solveBoard(board);
-        return board;
-    }
-
     private String getRandomLetter() {
         double d = random.nextDouble();
         double sum = 0;
@@ -65,8 +83,9 @@ public class BoardGenerator {
         return alphabet[alphabet.length - 1];
     }
 
-    private void solveBoard(Board board) {
+    private boolean solveBoard(Board board) {
         TreeSet<String> words = new TreeSet<>();
+        boolean[][] covered = new boolean[board.size][board.size];
 
         for (int startRow = 0; startRow < board.size; startRow++ ) {
             for (int startCol = 0; startCol < board.size; startCol++) {
@@ -87,6 +106,10 @@ public class BoardGenerator {
                     }
                     if (vocab.get(next.lo).length() == next.prefix.length()) {
                         words.add(next.prefix);
+                        for (Position pos: stack) {
+                            covered[pos.row][pos.col] = true;
+                        }
+                        covered[next.row][next.col] = true;
                     }
                     taken[next.row][next.col] = true;
                     stack.push(next);
@@ -96,9 +119,21 @@ public class BoardGenerator {
 
         board.words = new ArrayList<>();
         board.words.addAll(words);
+
+        boolean allCovered = true;
+        for (int row = 0; row < board.size; row++) {
+            for (int col = 0; col < board.size; col++) {
+                if (!covered[row][col]) {
+                    allCovered = false;
+                    break;
+                }
+            }
+            if (!allCovered) break;
+        }
+        return allCovered;
     }
 
-    class Position {
+    private class Position {
         int row;
         int col;
         int hi;
@@ -172,7 +207,7 @@ public class BoardGenerator {
         }
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         ArrayList<String> vocab = new ArrayList<>();
         vocab.add("ESŐ");
         vocab.add("ÉK");
@@ -196,5 +231,17 @@ public class BoardGenerator {
 
         Board board2 = boardGenerator.generateBoard(5, 200);
         System.out.println(board2.asJson());
+
+        //ClassLoader classLoader = boardGenerator.getClass().getClassLoader();
+        ClassLoader classloader = Thread.currentThread().getContextClassLoader();
+        URL url = classloader.getResource("resources/szavak.txt");
+        if (url == null) {
+            System.out.println("szavak.txt not found!");
+        } else {
+            File file = new File(url.getFile());
+            BoardGenerator boardGenerator2 = new BoardGenerator(file);
+            System.out.println(Arrays.toString(boardGenerator2.alphabet));
+            System.out.println(boardGenerator2.generateBoard(3, 300).asJson());
+        }
     }
 }
