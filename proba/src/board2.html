@@ -13,6 +13,33 @@
     prevrow = -999;
     prevcol = -999;
     word = "";
+
+    prevElem = null;
+
+    function endtouch(event) {
+      touch = event.changedTouches[0];
+      elem = document.elementFromPoint(touch.clientX, touch.clientY);
+      if (elem.dataset.letter != 1) {
+        return;
+      }
+      mywhite(elem);
+    }
+
+    function mytouch(event) {
+      touch = event.touches[0];
+      elem = document.elementFromPoint(touch.clientX, touch.clientY);
+      if (elem.dataset.letter != 1) {
+        return;
+      }
+      if (elem != prevElem) {
+        if (prevElem != null) {
+          mywhite(prevElem);
+        }
+        myred(elem);
+        prevElem = elem;
+      }
+    }
+
     function myred(letter) {
       letter.style.backgroundColor = "red";
       row = letter.dataset.row;
@@ -72,19 +99,24 @@
 </style>
 <body>
 
-<div class="board2" id="board">
-    <div class="letter" data-row=0 data-col=0 onmouseover="myred(this)" onmouseout="mywhite(this)"></div>
-    <div class="letter" data-row=0 data-col=1 onmouseover="myred(this)" onmouseout="mywhite(this)"></div>
-    <div class="letter" data-row=0 data-col=2 onmouseover="myred(this)" onmouseout="mywhite(this)"></div>
-    <div class="letter" data-row=1 data-col=0 onmouseover="myred(this)" onmouseout="mywhite(this)"></div>
-    <div class="letter" data-row=1 data-col=1 onmouseover="myred(this)" onmouseout="mywhite(this)"></div>
-    <div class="letter" data-row=1 data-col=2 onmouseover="myred(this)" onmouseout="mywhite(this)"></div>
-    <div class="letter" data-row=2 data-col=0 onmouseover="myred(this)" onmouseout="mywhite(this)"></div>
-    <div class="letter" data-row=2 data-col=1 onmouseover="myred(this)" onmouseout="mywhite(this)"></div>
-    <div class="letter" data-row=2 data-col=2 onmouseover="myred(this)" onmouseout="mywhite(this)"></div>
+<div class="board2" data-letter=0 id="board">
+    <div class="letter" data-letter=1 data-row=0 data-col=0 ontouchend="endtouch(event)" ontouchstart="mytouch(event)" ontouchmove="mytouch(event)" onmouseover="myred(this)" onmouseout="mywhite(this)"></div>
+    <div class="letter" data-letter=1 data-row=0 data-col=1 ontouchend="endtouch(event)" ontouchstart="mytouch(event)" ontouchmove="mytouch(event)" onmouseover="myred(this)" onmouseout="mywhite(this)"></div>
+    <div class="letter" data-letter=1 data-row=0 data-col=2 ontouchend="endtouch(event)" ontouchstart="mytouch(event)" ontouchmove="mytouch(event)" onmouseover="myred(this)" onmouseout="mywhite(this)"></div>
+    <div class="letter" data-letter=1 data-row=1 data-col=0 ontouchend="endtouch(event)" ontouchstart="mytouch(event)" ontouchmove="mytouch(event)" onmouseover="myred(this)" onmouseout="mywhite(this)"></div>
+    <div class="letter" data-letter=1 data-row=1 data-col=1 ontouchend="endtouch(event)" ontouchstart="mytouch(event)" ontouchmove="mytouch(event)" onmouseover="myred(this)" onmouseout="mywhite(this)"></div>
+    <div class="letter" data-letter=1 data-row=1 data-col=2 ontouchend="endtouch(event)" ontouchstart="mytouch(event)" ontouchmove="mytouch(event)" onmouseover="myred(this)" onmouseout="mywhite(this)"></div>
+    <div class="letter" data-letter=1 data-row=2 data-col=0 ontouchend="endtouch(event)" ontouchstart="mytouch(event)" ontouchmove="mytouch(event)" onmouseover="myred(this)" onmouseout="mywhite(this)"></div>
+    <div class="letter" data-letter=1 data-row=2 data-col=1 ontouchend="endtouch(event)" ontouchstart="mytouch(event)" ontouchmove="mytouch(event)" onmouseover="myred(this)" onmouseout="mywhite(this)"></div>
+    <div class="letter" data-letter=1 data-row=2 data-col=2 ontouchend="endtouch(event)" ontouchstart="mytouch(event)" ontouchmove="mytouch(event)" onmouseover="myred(this)" onmouseout="mywhite(this)"></div>
 </div>
 
-<script>setLetters();</script>
+<script>
+setLetters();
+document.body.addEventListener('touchmove', function(event) {
+  event.preventDefault();
+}, false);
+</script>
 
 <div id="result"></div>
 
