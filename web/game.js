@@ -106,10 +106,18 @@ function showCurrentGuess() {
   document.getElementById("result").innerHTML = word;
 }
 
+function makeUnplayable() {
+  playable = false;
+  document.getElementById("board").className += " unplayable";
+  document.getElementById("saveButton").style.display = "none";
+}
+
 function setLettersFromDataset(event) {
   console.log("Clicked " + event);
-  playable = (event.target.dataset.playable == "true");
   setLetters(JSON.parse(event.target.dataset.json));
+  if (event.target.dataset.playable != "true") {
+    makeUnplayable();
+  }
   sheetRow = event.target.dataset.sheetRow;
   document.getElementById("boardList").innerHTML = "";
   document.getElementById("saveButton").style.display = "inline";
@@ -128,8 +136,7 @@ function setLetters(b) {
       d.dataset.row = i;
       d.dataset.col = j;
       d.dataset.letter = 1;
-      console.log("Playable is now " + playable);
-      d.className = playable ? "letter" : "letter unplayable";
+      d.className = "letter";
       d.addEventListener("touchend", mytouchend);
       d.addEventListener("touchstart", mytouchstart);
       d.addEventListener("touchmove", mytouchmove);

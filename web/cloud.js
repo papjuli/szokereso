@@ -64,26 +64,41 @@ function loadBoardList() {
 }
 
 function saveBoardResult() {
-console.log("Saving...");
-profile = myProfile();
-console.log(profile);
-range = "B" + sheetRow;
-console.log(range);
-gapi.client.sheets.spreadsheets.values.update({
-  spreadsheetId: '1u9w_rAWrPBUnmQ_G4TYvnIEDifVQg4HWKhbqvFET2Yk',
-  range: range,
-  valueInputOption: "RAW",
-  resource: {
-    values: [
-      [profile.getEmail(), profile.getName(), score, found_words.join()],
-    ],
-  }
-}).then(function(err, result) {
-  if(err) {
-    // Handle error
-    console.log(err);
-  } else {
-    console.log('%d cells updated.', result.updatedCells);
-  }
-});
+  console.log("Saving...");
+  profile = myProfile();
+  console.log(profile);
+
+  range = "A" + sheetRow + ":Z" + sheetRow;
+  emptyColIndex = -1;
+  gapi.client.sheets.spreadsheets.values.get({
+      spreadsheetId: '1u9w_rAWrPBUnmQ_G4TYvnIEDifVQg4HWKhbqvFET2Yk',
+      range: range,
+    }).then(function(result) {
+      console.log(result);
+      emptyColIndex = result.result.values[0].length;
+      console.log(emptyColIndex);
+  }).then(function() {
+      range = String.fromCharCode("A".charCodeAt(0) + emptyColIndex) + sheetRow;
+
+      console.log(range);
+      gapi.client.sheets.spreadsheets.values.update({
+        spreadsheetId: '1u9w_rAWrPBUnmQ_G4TYvnIEDifVQg4HWKhbqvFET2Yk',
+        range: range,
+        valueInputOption: "RAW",
+        resource: {
+          values: [
+            [profile.getEmail(), profile.getName(), score, found_words.join()],
+          ],
+        }
+      }).then(function(err, result) {
+        if(err) {
+          // Handle error
+          console.log(err);
+        } else {
+          console.log('%d cells updated.', result.updatedCells);
+        }
+      });
+      makeUnplayable();
+  });
+
 }
