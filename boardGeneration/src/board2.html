@@ -107,6 +107,11 @@
       setLetters(board);
     }
 
+    function setLettersFromDataset(event) {
+      console.log("Clicked " + event);
+      setLetters(JSON.parse(event.target.dataset.json));
+    }
+
     function setLetters(b) {
       words = b.words;
       letters = b.letters;
@@ -192,6 +197,7 @@ document.body.addEventListener('touchmove', function(event) {
         }).then(function() {
             profile = gapi.auth2.getAuthInstance().currentUser.get().getBasicProfile();
             document.getElementById("whoami").innerHTML = profile.getEmail() + " " + profile.getName();
+            loadBoardList();
         });
       }
 
@@ -212,6 +218,23 @@ document.body.addEventListener('touchmove', function(event) {
         }).then(function(result) {
             board = JSON.parse(result.result.values[0][0]);
             setLetters(board);
+        });
+      }
+
+      function loadBoardList() {
+        gapi.client.sheets.spreadsheets.values.get({
+          spreadsheetId: '1u9w_rAWrPBUnmQ_G4TYvnIEDifVQg4HWKhbqvFET2Yk',
+          range: 'A1:A9999',
+        }).then(function(result) {
+            console.log(result);
+            rows = result.result.values;
+            for (i=0; i<rows.length; ++i) {
+              b = document.createElement("button");
+              b.innerHTML = "Load board " + (i + 1);
+              b.dataset.json = rows[i][0];
+              b.addEventListener("click", setLettersFromDataset);
+              document.getElementById("boardList").appendChild(b);
+            }
         });
       }
 
@@ -251,6 +274,8 @@ document.body.addEventListener('touchmove', function(event) {
 <button onclick="loadBoard()">Load</button>
 
 <div id="whoami"></div>
+
+<div id="boardList"></div>
 
 </body>
 </html>
