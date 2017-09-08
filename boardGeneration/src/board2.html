@@ -11,65 +11,89 @@
     letters = board.letters;
     words = board.words;
 
-
-    prevrow = -999;
-    prevcol = -999;
     word = "";
 
     prevElem = null;
+    prevPrevElem = null;
 
-    function endtouch(event) {
-      touch = event.changedTouches[0];
-      elem = document.elementFromPoint(touch.clientX, touch.clientY);
-      if (elem.dataset.letter != 1) {
-        return;
-      }
-      mywhite(elem);
-    }
-
-    function mytouch(event) {
+    function mytouchstart(event) {
       touch = event.touches[0];
       elem = document.elementFromPoint(touch.clientX, touch.clientY);
       if (elem.dataset.letter != 1) {
         return;
       }
-      if (elem != prevElem) {
-        if (prevElem != null) {
-          mywhite(prevElem);
-        }
-        myred(elem);
+      prevElem = elem;
+      prevPrevElem = null;
+      word = elem.innerHTML;
+      mark(elem);
+      showCurrentGuess();
+    }
+
+    function mytouchmove(event) {
+      touch = event.touches[0];
+      elem = document.elementFromPoint(touch.clientX, touch.clientY);
+      if (elem.dataset.letter != 1) {
+        return;
+      }
+      if (elem == prevElem) {
+        return;
+      }
+      if (elem == prevPrevElem) {
+        unmark(prevElem);
+        word = word.slice(0, word.length - 1);
+        showCurrentGuess();
         prevElem = elem;
+        prevPrevElem = null;
+        return;
+      }
+      if (isMarked(elem)) {
+        return;
+      }
+      dr = elem.dataset.row - prevElem.dataset.row;
+      dc = elem.dataset.col - prevElem.dataset.col;
+      d = dr*dr + dc*dc;
+      if (d == 0 || d > 2) {
+        return;
+      }
+      word = word + elem.innerHTML;
+      showCurrentGuess();
+      mark(elem);
+      prevPrevElem = prevElem;
+      prevElem = elem;
+    }
+
+    function mytouchend(event) {
+      guessWord();
+      word = "";
+      showCurrentGuess();
+      divs = document.getElementById("board").getElementsByTagName("div");
+      for (i=0; i<divs.length; ++i) {
+        unmark(divs[i]);
       }
     }
 
-    function myred(letter) {
-      letter.style.backgroundColor = "red";
-      row = letter.dataset.row;
-      col = letter.dataset.col;
-      dist = (prevrow-row)*(prevrow-row)+(prevcol-col)*(prevcol-col);
-      if (dist == 0) return;
-      if ((prevrow-row)*(prevrow-row)+(prevcol-col)*(prevcol-col) <= 2) {
-        word = word + letter.innerHTML;
-      } else {
-        word = letter.innerHTML;
-      }
-      prevrow = row;
-      prevcol = col;
-      guess(word);
-    }
-    function guess(word) {
-      document.getElementById("result").innerHTML = word;
-      for (i = 0; i<word.length-1; ++i) {
-        suffix = word.slice(i, word.length);
-        console.log(suffix);
-        if (words.indexOf(suffix) != -1) {
-          document.getElementById("found").innerHTML += " " + suffix;
+    function guessWord() {
+        if (words.indexOf(word) != -1) {
+          document.getElementById("found").innerHTML += " " + word;
         }
-      }
     }
-    function mywhite(x) {
-      x.style.backgroundColor = "white";
+
+    function mark(elem) {
+      elem.style.backgroundColor = "red";
     }
+
+    function unmark(elem) {
+      elem.style.backgroundColor = "white";
+    }
+
+    function isMarked(elem) {
+      return elem.style.backgroundColor == "red";
+    }
+
+    function showCurrentGuess() {
+      document.getElementById("result").innerHTML = word;
+    }
+
     function setLetters() {
       divs = document.getElementById("board").getElementsByTagName("div");
       for (i=0; i<divs.length; ++i) {
@@ -104,15 +128,15 @@
 <body>
 
 <div class="board2" data-letter=0 id="board">
-    <div class="letter" data-letter=1 data-row=0 data-col=0 ontouchend="endtouch(event)" ontouchstart="mytouch(event)" ontouchmove="mytouch(event)" onmouseover="myred(this)" onmouseout="mywhite(this)"></div>
-    <div class="letter" data-letter=1 data-row=0 data-col=1 ontouchend="endtouch(event)" ontouchstart="mytouch(event)" ontouchmove="mytouch(event)" onmouseover="myred(this)" onmouseout="mywhite(this)"></div>
-    <div class="letter" data-letter=1 data-row=0 data-col=2 ontouchend="endtouch(event)" ontouchstart="mytouch(event)" ontouchmove="mytouch(event)" onmouseover="myred(this)" onmouseout="mywhite(this)"></div>
-    <div class="letter" data-letter=1 data-row=1 data-col=0 ontouchend="endtouch(event)" ontouchstart="mytouch(event)" ontouchmove="mytouch(event)" onmouseover="myred(this)" onmouseout="mywhite(this)"></div>
-    <div class="letter" data-letter=1 data-row=1 data-col=1 ontouchend="endtouch(event)" ontouchstart="mytouch(event)" ontouchmove="mytouch(event)" onmouseover="myred(this)" onmouseout="mywhite(this)"></div>
-    <div class="letter" data-letter=1 data-row=1 data-col=2 ontouchend="endtouch(event)" ontouchstart="mytouch(event)" ontouchmove="mytouch(event)" onmouseover="myred(this)" onmouseout="mywhite(this)"></div>
-    <div class="letter" data-letter=1 data-row=2 data-col=0 ontouchend="endtouch(event)" ontouchstart="mytouch(event)" ontouchmove="mytouch(event)" onmouseover="myred(this)" onmouseout="mywhite(this)"></div>
-    <div class="letter" data-letter=1 data-row=2 data-col=1 ontouchend="endtouch(event)" ontouchstart="mytouch(event)" ontouchmove="mytouch(event)" onmouseover="myred(this)" onmouseout="mywhite(this)"></div>
-    <div class="letter" data-letter=1 data-row=2 data-col=2 ontouchend="endtouch(event)" ontouchstart="mytouch(event)" ontouchmove="mytouch(event)" onmouseover="myred(this)" onmouseout="mywhite(this)"></div>
+    <div class="letter" data-letter=1 data-row=0 data-col=0 ontouchend="mytouchend(event)" ontouchstart="mytouchstart(event)" ontouchmove="mytouchmove(event)"></div>
+    <div class="letter" data-letter=1 data-row=0 data-col=1 ontouchend="mytouchend(event)" ontouchstart="mytouchstart(event)" ontouchmove="mytouchmove(event)"></div>
+    <div class="letter" data-letter=1 data-row=0 data-col=2 ontouchend="mytouchend(event)" ontouchstart="mytouchstart(event)" ontouchmove="mytouchmove(event)"></div>
+    <div class="letter" data-letter=1 data-row=1 data-col=0 ontouchend="mytouchend(event)" ontouchstart="mytouchstart(event)" ontouchmove="mytouchmove(event)"></div>
+    <div class="letter" data-letter=1 data-row=1 data-col=1 ontouchend="mytouchend(event)" ontouchstart="mytouchstart(event)" ontouchmove="mytouchmove(event)"></div>
+    <div class="letter" data-letter=1 data-row=1 data-col=2 ontouchend="mytouchend(event)" ontouchstart="mytouchstart(event)" ontouchmove="mytouchmove(event)"></div>
+    <div class="letter" data-letter=1 data-row=2 data-col=0 ontouchend="mytouchend(event)" ontouchstart="mytouchstart(event)" ontouchmove="mytouchmove(event)"></div>
+    <div class="letter" data-letter=1 data-row=2 data-col=1 ontouchend="mytouchend(event)" ontouchstart="mytouchstart(event)" ontouchmove="mytouchmove(event)"></div>
+    <div class="letter" data-letter=1 data-row=2 data-col=2 ontouchend="mytouchend(event)" ontouchstart="mytouchstart(event)" ontouchmove="mytouchmove(event)"></div>
 </div>
 
 <script>
