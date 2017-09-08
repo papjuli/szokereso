@@ -241,7 +241,7 @@ public class BoardGenerator {
             File file = new File(url.getFile());
             BoardGenerator boardGenerator2 = new BoardGenerator(file);
             System.out.println(Arrays.toString(boardGenerator2.alphabet));
-            System.out.println(boardGenerator2.generateBoard(3, 300).asJson());
+            System.out.println(boardGenerator2.generateBoard(4, 300).asJson());
         }
     }
 }
