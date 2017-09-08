@@ -239,7 +239,7 @@ document.body.addEventListener('touchmove', function(event) {
           valueInputOption: "RAW",
           resource: {
             values: [
-              [profile.getEmail(), profile.getName(), score],
+              [profile.getEmail(), profile.getName(), score, found_words.join()],
             ],
           }
         }).then(function(err, result) {
