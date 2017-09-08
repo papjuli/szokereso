@@ -6,10 +6,11 @@
     <script>
 
 
-    board = {"size": 4, "timeSeconds": 300, "letters": [["s","i","ő","á"],["í","z","l","a"],["ö","l","l","s"],["i","e","é","g"]], words: ["allé","alá","alél","el","ellés","ellő","elé","elég","elél","gél","gésa","illa","illő","is","la","le","lel","leég","leél","leöl","leölés","lé","lég","lő","szil","szila","sző","sí","síző","áll","ég","él","és","öl","ölel","ölelés","ölés","őz"]}
+    board = null;
+    letters = null;
+    words = null;
 
-    letters = board.letters;
-    words = board.words;
+    sheetRow = -1;
 
     found_words = [];
     score = 0;
@@ -103,13 +104,11 @@
       document.getElementById("result").innerHTML = word;
     }
 
-    function setDefaultLetters() {
-      setLetters(board);
-    }
-
     function setLettersFromDataset(event) {
       console.log("Clicked " + event);
       setLetters(JSON.parse(event.target.dataset.json));
+      sheetRow = event.target.dataset.sheetRow;
+      document.getElementById("boardList").innerHTML = "";
     }
 
     function setLetters(b) {
@@ -167,7 +166,6 @@
 </div>
 
 <script>
-setDefaultLetters();
 document.body.addEventListener('touchmove', function(event) {
   event.preventDefault();
 }, false);
@@ -211,16 +209,6 @@ document.body.addEventListener('touchmove', function(event) {
         gapi.auth2.getAuthInstance().signOut();
       }
 
-      function loadBoard() {
-        gapi.client.sheets.spreadsheets.values.get({
-          spreadsheetId: '1u9w_rAWrPBUnmQ_G4TYvnIEDifVQg4HWKhbqvFET2Yk',
-          range: 'A1:A9999',
-        }).then(function(result) {
-            board = JSON.parse(result.result.values[0][0]);
-            setLetters(board);
-        });
-      }
-
       function loadBoardList() {
         gapi.client.sheets.spreadsheets.values.get({
           spreadsheetId: '1u9w_rAWrPBUnmQ_G4TYvnIEDifVQg4HWKhbqvFET2Yk',
@@ -232,37 +220,36 @@ document.body.addEventListener('touchmove', function(event) {
               b = document.createElement("button");
               b.innerHTML = "Load board " + (i + 1);
               b.dataset.json = rows[i][0];
+              b.dataset.sheetRow = i+1;
               b.addEventListener("click", setLettersFromDataset);
               document.getElementById("boardList").appendChild(b);
             }
         });
       }
 
-      function makeApiCall() {
-        gapi.client.sheets.spreadsheets.values.get({
+      function saveBoardResult() {
+        console.log("Saving...");
+        profile = gapi.auth2.getAuthInstance().currentUser.get().getBasicProfile();
+        console.log(profile);
+        range = "B" + sheetRow;
+        console.log(range);
+        gapi.client.sheets.spreadsheets.values.update({
           spreadsheetId: '1u9w_rAWrPBUnmQ_G4TYvnIEDifVQg4HWKhbqvFET2Yk',
-          range: 'A1:A9999',
+          range: range,
+          valueInputOption: "RAW",
+          resource: {
+            values: [
+              [profile.getEmail(), profile.getName(), score],
+            ],
+          }
         }).then(function(err, result) {
-          if (err) {
+          if(err) {
+            // Handle error
             console.log(err);
           } else {
-            console.log(result);
+            console.log('%d cells updated.', result.updatedCells);
           }
         });
-
-        gapi.client.sheets.spreadsheets.values.append({
-          spreadsheetId: '1u9w_rAWrPBUnmQ_G4TYvnIEDifVQg4HWKhbqvFET2Yk',
-          range: 'A1:Z9999',
-          valueInputOption: 'RAW',
-          resource: {range: "A1:Z9999", majorDimension: "ROWS", values: [["Hello, world!"]]}
-        }).then(function(err, result) {
-          if (err) {
-            console.log(err);
-          } else {
-            console.log('%d cells appended.', result.updates.updatedCells);
-          }
-        });
-
       }
     </script>
 <script async defer src="https://apis.google.com/js/api.js"
@@ -271,11 +258,11 @@ document.body.addEventListener('touchmove', function(event) {
 </script>
     <button id="signin-button" onclick="handleSignInClick()">Sign In</button>
     <button id="signout-button" onclick="handleSignOutClick()">Sign Out</button>
-<button onclick="loadBoard()">Load</button>
 
 <div id="whoami"></div>
 
 <div id="boardList"></div>
+<button onclick="saveBoardResult()">Save</button>
 
 </body>
 </html>
