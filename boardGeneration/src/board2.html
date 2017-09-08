@@ -6,8 +6,10 @@
     <script>
 
 
-    letters = [["É", "S", "T"], ["K", "Ő", "M"], ["A", "L", "I"]];
-    words = ["ÉS", "ŐS", "KÉS", "KÉSŐ", "SŐT", "KŐ", "LŐ", "TŐ", "TŐKÉS", "LAK", "MI"];
+    board = {"size": 3, "timeSeconds": 300, "letters": [["n","i","r"],["ő","n","l"],["l","y","g"]], words: ["ily","ing","lő","ni","nő","női","ring"]}
+
+    letters = board.letters;
+    words = board.words;
 
 
     prevrow = -999;
@@ -91,10 +93,12 @@
     .letter {
       border-style: solid;
       border-color: black;
+      border-radius: 10px;
       padding: 10px;
       line-height: 60px;
       text-align: center;
       font-size: 250%;
+      text-transform: uppercase;
     }
 </style>
 <body>
