@@ -31,7 +31,7 @@ class Board {
             }
             result.append("]");
         }
-        result.append("], words: [");
+        result.append("], \"words\": [");
 
         boolean firstWord = true;
         for (String word : words) {
