@@ -63,6 +63,22 @@ function loadBoardList() {
   });
 }
 
+function getBoardResults() {
+  range = "A" + sheetRow + ":Z" + sheetRow;
+  gapi.client.sheets.spreadsheets.values.get({
+      spreadsheetId: '1u9w_rAWrPBUnmQ_G4TYvnIEDifVQg4HWKhbqvFET2Yk',
+      range: range,
+    }).then(function(result) {
+      console.log(result);
+      rendered = "";
+      row = result.result.values[0];
+      for (i = 1; i < row.length; i += 4) {
+        rendered += "<br><div>email: " + row[i] + " name: " + row[i+1] + " score: " + row[i+2] + " words found: " + row[i+3] + "</div>";
+      }
+      updateBoardResults(rendered);
+  });
+}
+
 function saveBoardResult() {
   console.log("Saving...");
   profile = myProfile();

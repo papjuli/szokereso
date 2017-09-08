@@ -110,15 +110,20 @@ function makeUnplayable() {
   playable = false;
   document.getElementById("board").className += " unplayable";
   document.getElementById("saveButton").style.display = "none";
+  getBoardResults();
+}
+
+function updateBoardResults(results) {
+  document.getElementById("boardResults").innerHTML = results + "<br>All words: " + words;
 }
 
 function setLettersFromDataset(event) {
   console.log("Clicked " + event);
   setLetters(JSON.parse(event.target.dataset.json));
+  sheetRow = event.target.dataset.sheetRow;
   if (event.target.dataset.playable != "true") {
     makeUnplayable();
   }
-  sheetRow = event.target.dataset.sheetRow;
   document.getElementById("boardList").innerHTML = "";
   document.getElementById("saveButton").style.display = "inline";
 }
