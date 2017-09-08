@@ -11,6 +11,9 @@
     letters = board.letters;
     words = board.words;
 
+    found_words = [];
+    score = 0;
+
     word = "";
 
     prevElem = null;
@@ -73,9 +76,15 @@
     }
 
     function guessWord() {
-        if (words.indexOf(word) != -1) {
+      if (words.indexOf(word) != -1) {
+        if (found_words.indexOf(word) == -1) {
           document.getElementById("found").innerHTML += " " + word;
+          length = word.length;
+          score += (length * length - 5 * length + 10) / 2;
+          document.getElementById("score").innerHTML = score;
+          found_words.push(word);
         }
+      }
     }
 
     function mark(elem) {
@@ -155,6 +164,7 @@ document.body.addEventListener('touchmove', function(event) {
 
 <div id="found"></div>
 
+<div id="score">0</div>
 
 <script type="text/javascript">
       function handleClientLoad() {
