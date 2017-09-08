@@ -33,3 +33,8 @@ body {
 #game {
   display: none;
 }
+
+
+.unplayable {
+  color: lightgrey;
+}

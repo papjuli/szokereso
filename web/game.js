@@ -34,7 +34,10 @@ function toMenu() {
   document.getElementById("menu").style.display = "inline";
 }
 
+playable = true;
+
 function mytouchstart(event) {
+  if (!playable) return;
   touch = event.touches[0];
   elem = document.elementFromPoint(touch.clientX, touch.clientY);
   if (elem.dataset.letter != 1) {
@@ -48,6 +51,7 @@ function mytouchstart(event) {
 }
 
 function mytouchmove(event) {
+  if (!playable) return;
   touch = event.touches[0];
   elem = document.elementFromPoint(touch.clientX, touch.clientY);
   if (elem.dataset.letter != 1) {
@@ -81,6 +85,7 @@ function mytouchmove(event) {
 }
 
 function mytouchend(event) {
+  if (!playable) return;
   guessWord();
   word = "";
   showCurrentGuess();
@@ -122,14 +127,25 @@ function showCurrentGuess() {
   document.getElementById("result").innerHTML = word;
 }
 
+function makeUnplayable() {
+  playable = false;
+  document.getElementById("board").className += " unplayable";
+  document.getElementById("saveButton").style.display = "none";
+}
+
 function setLettersFromDataset(event) {
   console.log("Clicked " + event);
   boardData = JSON.parse(event.target.dataset.json)
   setLetters(boardData);
+  if (event.target.dataset.playable != "true") {
+    makeUnplayable();
+  }
   sheetRow = event.target.dataset.sheetRow;
   document.getElementById("game").style.display = "inline";
   document.getElementById("menu").style.display = "none";
   startTimer();
+  document.getElementById("boardList").innerHTML = "";
+  document.getElementById("saveButton").style.display = "inline";
 }
 
 function setLetters(boardData) {

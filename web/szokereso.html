@@ -29,7 +29,16 @@
 
   <div id="whoami"></div>
 
-  <div id="boardList"></div>
+    <div id="boardList">
+        <div>Solved by me</div>
+        <div id="solvedByMe"></div>
+        <br>
+        <div>Solved by someone</div>
+        <div id="solvedBySomeone"></div>
+        <br>
+        <div>Unsolved</div>
+        <div id="unsolved"></div>
+    </div>
 </div>
 
 <div id="game">
@@ -45,6 +54,9 @@
 
   <button onclick="saveBoardResult()">Save</button>
 </div>
+
+
+<button id="saveButton" onclick="saveBoardResult()" style="display: none">Save</button>
 
 </body>
 </html>
