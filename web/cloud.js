@@ -13,10 +13,14 @@ gapi.client.init({
     clientId: '544351928107-lnucrgo39ustk9aq28s7hnp9kdto6k5j.apps.googleusercontent.com',
     scope: 'https://www.googleapis.com/auth/spreadsheets'
 }).then(function() {
-    profile = gapi.auth2.getAuthInstance().currentUser.get().getBasicProfile();
+    profile = myProfile();
     document.getElementById("whoami").innerHTML = profile.getEmail() + " " + profile.getName();
     loadBoardList();
 });
+}
+
+function myProfile() {
+  return gapi.auth2.getAuthInstance().currentUser.get().getBasicProfile();
 }
 
 function handleSignInClick(event) {
@@ -30,10 +34,11 @@ gapi.auth2.getAuthInstance().signOut();
 }
 
 function loadBoardList() {
-gapi.client.sheets.spreadsheets.values.get({
-  spreadsheetId: '1u9w_rAWrPBUnmQ_G4TYvnIEDifVQg4HWKhbqvFET2Yk',
-  range: 'A1:A9999',
-}).then(function(result) {
+  profile = myProfile();
+  gapi.client.sheets.spreadsheets.values.get({
+    spreadsheetId: '1u9w_rAWrPBUnmQ_G4TYvnIEDifVQg4HWKhbqvFET2Yk',
+    range: 'A1:Z9999',
+  }).then(function(result) {
     console.log(result);
     rows = result.result.values;
     for (i=0; i<rows.length; ++i) {
@@ -41,15 +46,26 @@ gapi.client.sheets.spreadsheets.values.get({
       b.innerHTML = "Load board " + (i + 1);
       b.dataset.json = rows[i][0];
       b.dataset.sheetRow = i+1;
+      b.dataset.playable = true;
       b.addEventListener("click", setLettersFromDataset);
-      document.getElementById("boardList").appendChild(b);
+      kind = "unsolved";
+      if (rows[i].length > 1) {
+        kind = "solvedBySomeone";
+        for (j=1; j<rows[i].length; ++j) {
+          if (rows[i][j] == profile.getEmail()) {
+            kind = "solvedByMe";
+            b.dataset.playable = false;
+          }
+        }
+      }
+      document.getElementById(kind).appendChild(b);
     }
-});
+  });
 }
 
 function saveBoardResult() {
 console.log("Saving...");
-profile = gapi.auth2.getAuthInstance().currentUser.get().getBasicProfile();
+profile = myProfile();
 console.log(profile);
 range = "B" + sheetRow;
 console.log(range);

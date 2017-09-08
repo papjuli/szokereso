@@ -13,7 +13,10 @@ word = "";
 prevElem = null;
 prevPrevElem = null;
 
+playable = true;
+
 function mytouchstart(event) {
+  if (!playable) return;
   touch = event.touches[0];
   elem = document.elementFromPoint(touch.clientX, touch.clientY);
   if (elem.dataset.letter != 1) {
@@ -27,6 +30,7 @@ function mytouchstart(event) {
 }
 
 function mytouchmove(event) {
+  if (!playable) return;
   touch = event.touches[0];
   elem = document.elementFromPoint(touch.clientX, touch.clientY);
   if (elem.dataset.letter != 1) {
@@ -60,6 +64,7 @@ function mytouchmove(event) {
 }
 
 function mytouchend(event) {
+  if (!playable) return;
   guessWord();
   word = "";
   showCurrentGuess();
@@ -103,9 +108,11 @@ function showCurrentGuess() {
 
 function setLettersFromDataset(event) {
   console.log("Clicked " + event);
+  playable = (event.target.dataset.playable == "true");
   setLetters(JSON.parse(event.target.dataset.json));
   sheetRow = event.target.dataset.sheetRow;
   document.getElementById("boardList").innerHTML = "";
+  document.getElementById("saveButton").style.display = "inline";
 }
 
 function setLetters(b) {
@@ -121,7 +128,8 @@ function setLetters(b) {
       d.dataset.row = i;
       d.dataset.col = j;
       d.dataset.letter = 1;
-      d.className = "letter";
+      console.log("Playable is now " + playable);
+      d.className = playable ? "letter" : "letter unplayable";
       d.addEventListener("touchend", mytouchend);
       d.addEventListener("touchstart", mytouchstart);
       d.addEventListener("touchmove", mytouchmove);

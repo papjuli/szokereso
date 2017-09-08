@@ -28,14 +28,25 @@ document.body.addEventListener('touchmove', function(event) {
         onload="this.onload=function(){};handleClientLoad()"
         onreadystatechange="if (this.readyState === 'complete') this.onload()">
 </script>
+<script></script>
 
 <button id="signin-button" onclick="handleSignInClick()">Sign In</button>
 <button id="signout-button" onclick="handleSignOutClick()">Sign Out</button>
 
 <div id="whoami"></div>
 
-<div id="boardList"></div>
-<button onclick="saveBoardResult()">Save</button>
+<div id="boardList">
+    <div>Solved by me</div>
+    <div id="solvedByMe"></div>
+    <br>
+    <div>Solved by someone</div>
+    <div id="solvedBySomeone"></div>
+    <br>
+    <div>Unsolved</div>
+    <div id="unsolved"></div>
+</div>
+
+<button id="saveButton" onclick="saveBoardResult()" style="display: none">Save</button>
 
 </body>
 </html>
