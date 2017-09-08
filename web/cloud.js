@@ -51,11 +51,9 @@ function saveBoardResult() {
 console.log("Saving...");
 profile = gapi.auth2.getAuthInstance().currentUser.get().getBasicProfile();
 console.log(profile);
-range = "B" + sheetRow;
-console.log(range);
 gapi.client.sheets.spreadsheets.values.update({
   spreadsheetId: '1u9w_rAWrPBUnmQ_G4TYvnIEDifVQg4HWKhbqvFET2Yk',
-  range: range,
+  range: "B" + sheetRow,
   valueInputOption: "RAW",
   resource: {
     values: [

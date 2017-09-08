@@ -9,33 +9,42 @@
 
 <body>
 
-<div class="board2" data-letter=0 id="board"></div>
-
 <script>
-document.body.addEventListener('touchmove', function(event) {
-  event.preventDefault();
-}, false);
+  document.body.addEventListener('touchmove',
+      function(event) {event.preventDefault();},
+      false);
 </script>
-
-<div id="result"></div>
-
-<div id="found"></div>
-
-<div id="score">0</div>
 
 <script type="text/javascript" src="cloud.js"></script>
+
 <script async defer src="https://apis.google.com/js/api.js"
-        onload="this.onload=function(){};handleClientLoad()"
-        onreadystatechange="if (this.readyState === 'complete') this.onload()">
+        onload="this.onload=function(){}; handleClientLoad();"
+        onreadystatechange="if (this.readyState === 'complete') this.onload();">
 </script>
+<script></script>
 
-<button id="signin-button" onclick="handleSignInClick()">Sign In</button>
-<button id="signout-button" onclick="handleSignOutClick()">Sign Out</button>
+<div id="menu">
+  <button id="signin-button" onclick="handleSignInClick()">Sign In</button>
+  <button id="signout-button" onclick="handleSignOutClick()">Sign Out</button>
 
-<div id="whoami"></div>
+  <div id="whoami"></div>
 
-<div id="boardList"></div>
-<button onclick="saveBoardResult()">Save</button>
+  <div id="boardList"></div>
+</div>
+
+<div id="game">
+  <div class="board2" data-letter=0 id="board"></div>
+
+  <div id="result"></div>
+
+  <div id="found"></div>
+
+  <div id="score">0</div>
+
+  <div id="timer"></div>
+
+  <button onclick="saveBoardResult()">Save</button>
+</div>
 
 </body>
 </html>

@@ -1,7 +1,7 @@
 
-board = null;
 letters = null;
 words = null;
+timeLeft = null;
 
 sheetRow = -1;
 
@@ -12,6 +12,27 @@ word = "";
 
 prevElem = null;
 prevPrevElem = null;
+
+function startTimer() {
+  var timer = setInterval(function() {
+    document.getElementById("timer").innerHTML = timeLeft;
+    timeLeft -= 1;
+    if (timeLeft == 0) {
+      stop(timer);
+    }
+  }, 1000);
+}
+
+function stop(timer) {
+  clearInterval(timer);
+  saveBoardResult();
+  toMenu();
+}
+
+function toMenu() {
+  document.getElementById("game").style.display = "none";
+  document.getElementById("menu").style.display = "inline";
+}
 
 function mytouchstart(event) {
   touch = event.touches[0];
@@ -86,15 +107,15 @@ function guessWord() {
 }
 
 function mark(elem) {
-  elem.style.backgroundColor = "red";
+  elem.classList.add("marked");
 }
 
 function unmark(elem) {
-  elem.style.backgroundColor = "white";
+  elem.classList.remove("marked");
 }
 
 function isMarked(elem) {
-  return elem.style.backgroundColor == "red";
+  elem.classList.contains("marked");
 }
 
 function showCurrentGuess() {
@@ -103,21 +124,26 @@ function showCurrentGuess() {
 
 function setLettersFromDataset(event) {
   console.log("Clicked " + event);
-  setLetters(JSON.parse(event.target.dataset.json));
+  boardData = JSON.parse(event.target.dataset.json)
+  setLetters(boardData);
   sheetRow = event.target.dataset.sheetRow;
-  document.getElementById("boardList").innerHTML = "";
+  document.getElementById("game").style.display = "inline";
+  document.getElementById("menu").style.display = "none";
+  startTimer();
 }
 
-function setLetters(b) {
-  words = b.words;
-  letters = b.letters;
+function setLetters(boardData) {
+  console.log(boardData)
+  words = boardData.words;
+  letters = boardData.letters;
+  timeLeft = boardData.timeSeconds;
   document.getElementById("board").innerHTML = "";
-  document.getElementById("board").style.setProperty("--boardSize", b.size);
+  document.getElementById("board").style.setProperty("--boardSize", boardData.size);
 
-  for (i=0; i<b.size; ++i) {
-    for (j=0; j<b.size; ++j) {
+  for (i=0; i<boardData.size; ++i) {
+    for (j=0; j<boardData.size; ++j) {
       d = document.createElement("div");
-      d.innerHTML = b.letters[i][j];
+      d.innerHTML = boardData.letters[i][j];
       d.dataset.row = i;
       d.dataset.col = j;
       d.dataset.letter = 1;
