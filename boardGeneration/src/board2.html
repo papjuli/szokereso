@@ -179,7 +179,10 @@ document.body.addEventListener('touchmove', function(event) {
             discoveryDocs: ["https://sheets.googleapis.com/$discovery/rest?version=v4"],
             clientId: '544351928107-lnucrgo39ustk9aq28s7hnp9kdto6k5j.apps.googleusercontent.com',
             scope: 'https://www.googleapis.com/auth/spreadsheets'
-        })
+        }).then(function() {
+            profile = gapi.auth2.getAuthInstance().currentUser.get().getBasicProfile();
+            document.getElementById("whoami").innerHTML = profile.getEmail() + " " + profile.getName();
+        });
       }
 
       function handleSignInClick(event) {
@@ -236,5 +239,8 @@ document.body.addEventListener('touchmove', function(event) {
     <button id="signin-button" onclick="handleSignInClick()">Sign In</button>
     <button id="signout-button" onclick="handleSignOutClick()">Sign Out</button>
 <button onclick="loadBoard()">Load</button>
+
+<div id="whoami"></div>
+
 </body>
 </html>
