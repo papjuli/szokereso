@@ -1,0 +1,24 @@
+body {
+  margin: 40px;
+}
+
+:root {
+  --boardSize: 3;
+}
+
+.board2 {
+  display: grid;
+  grid-template-columns: repeat(var(--boardSize), 100px);
+  grid-gap: 30px;
+}
+
+.letter {
+  border-style: solid;
+  border-color: black;
+  border-radius: 10px;
+  padding: 10px;
+  line-height: 60px;
+  text-align: center;
+  font-size: 250%;
+  text-transform: uppercase;
+}
