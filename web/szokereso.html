@@ -9,42 +9,52 @@
 
 <body>
 
-<div class="board2" data-letter=0 id="board"></div>
-
 <script>
-document.body.addEventListener('touchmove', function(event) {
-  event.preventDefault();
-}, false);
+  document.body.addEventListener('touchmove',
+      function(event) {event.preventDefault();},
+      false);
 </script>
 
-<div id="result"></div>
-
-<div id="found"></div>
-
-<div id="score">0</div>
-
 <script type="text/javascript" src="cloud.js"></script>
+
 <script async defer src="https://apis.google.com/js/api.js"
-        onload="this.onload=function(){};handleClientLoad()"
-        onreadystatechange="if (this.readyState === 'complete') this.onload()">
+        onload="this.onload=function(){}; handleClientLoad();"
+        onreadystatechange="if (this.readyState === 'complete') this.onload();">
 </script>
 <script></script>
 
-<button id="signin-button" onclick="handleSignInClick()">Sign In</button>
-<button id="signout-button" onclick="handleSignOutClick()">Sign Out</button>
+<div id="menu">
+  <button id="signin-button" onclick="handleSignInClick()">Sign In</button>
+  <button id="signout-button" onclick="handleSignOutClick()">Sign Out</button>
 
-<div id="whoami"></div>
+  <div id="whoami"></div>
 
-<div id="boardList">
-    <div>Solved by me</div>
-    <div id="solvedByMe"></div>
-    <br>
-    <div>Solved by someone</div>
-    <div id="solvedBySomeone"></div>
-    <br>
-    <div>Unsolved</div>
-    <div id="unsolved"></div>
+    <div id="boardList">
+        <div>Solved by me</div>
+        <div id="solvedByMe"></div>
+        <br>
+        <div>Solved by someone</div>
+        <div id="solvedBySomeone"></div>
+        <br>
+        <div>Unsolved</div>
+        <div id="unsolved"></div>
+    </div>
 </div>
+
+<div id="game">
+  <div class="board2" data-letter=0 id="board"></div>
+
+  <div id="result"></div>
+
+  <div id="found"></div>
+
+  <div id="score">0</div>
+
+  <div id="timer"></div>
+
+  <button onclick="saveBoardResult()">Save</button>
+</div>
+
 
 <button id="saveButton" onclick="saveBoardResult()" style="display: none">Save</button>
 <div id="boardResults"></div>

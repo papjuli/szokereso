@@ -1,5 +1,7 @@
 body {
   margin: 40px;
+  font-family: "Arial", sans-serif;
+  font-size: 1em;
 }
 
 :root {
@@ -8,20 +10,30 @@ body {
 
 .board2 {
   display: grid;
+  grid-auto-rows: 100px;
   grid-template-columns: repeat(var(--boardSize), 100px);
   grid-gap: 30px;
 }
 
 .letter {
   border-style: solid;
-  border-color: black;
+  border-color: darkblue;
   border-radius: 10px;
   padding: 10px;
-  line-height: 60px;
+  line-height: 70px;
   text-align: center;
-  font-size: 250%;
+  font-size: 42px;
   text-transform: uppercase;
 }
+
+.letter.marked {
+  background-color: red;
+}
+
+#game {
+  display: none;
+}
+
 
 .unplayable {
   color: lightgrey;
