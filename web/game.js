@@ -40,6 +40,7 @@ function toMenu() {
   score = 0;
   document.getElementById("found").innerHTML = "";
   document.getElementById("score").innerHTML = "";
+  document.getElementById("timer").innerHTML = "";
   document.getElementById("board").classList.remove("unplayable");
   loadBoardList();
 }
@@ -141,7 +142,7 @@ function makeUnplayable() {
   playable = false;
   document.getElementById("board").className += " unplayable";
   document.getElementById("saveButton").style.display = "none";
-  document.getElementById("menuButton").style.display = "inline";
+  document.getElementById("endOfGameButtons").style.display = "inline";
   getBoardResults();
 }
 
@@ -155,7 +156,7 @@ function setLettersFromDataset(event) {
   setLetters(boardData);
   sheetRow = event.target.dataset.sheetRow;
   document.getElementById("saveButton").style.display = "inline";
-  document.getElementById("menuButton").style.display = "none";
+  document.getElementById("endOfGameButtons").style.display = "none";
   document.getElementById("boardResults").innerHTML = "";
   if (event.target.dataset.playable != "true") {
     makeUnplayable();
