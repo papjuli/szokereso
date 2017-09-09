@@ -20,7 +20,7 @@ function startTimer() {
     document.getElementById("timer").innerHTML = timeLeft;
     timeLeft -= 1;
     if (timeLeft == 0) {
-      stop(timer);
+      stopTimer();
     }
   }, 1000);
 }

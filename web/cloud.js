@@ -41,6 +41,10 @@ function loadBoardList() {
   }).then(function(result) {
     console.log(result);
     rows = result.result.values;
+    sizes = new Map();
+    sizes.set("unsolved", new Map());
+    sizes.set("solvedBySomeone", new Map());
+    sizes.set("solvedByMe", new Map());
     for (i=0; i<rows.length; ++i) {
       b = document.createElement("button");
       b.innerHTML = "Load board " + (i + 1);
@@ -58,7 +62,19 @@ function loadBoardList() {
           }
         }
       }
-      document.getElementById(kind).appendChild(b);
+      currentSizes = sizes.get(kind);
+      currentDiv = document.getElementById(kind);
+      parsedBoard = JSON.parse(b.dataset.json);
+      sizeAndTime = "Size " + parsedBoard.size + " time " + parsedBoard.timeSeconds;
+      if (!currentSizes.has(sizeAndTime)) {
+        titleDiv = document.createElement("div");
+        titleDiv.innerHTML = sizeAndTime;
+        currentDiv.appendChild(titleDiv);
+        contentDiv = document.createElement("div");
+        currentSizes.set(sizeAndTime, contentDiv);
+        currentDiv.appendChild(contentDiv);
+      }
+      currentSizes.get(sizeAndTime).appendChild(b);
     }
   });
 }
