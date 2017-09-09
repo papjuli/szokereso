@@ -13,9 +13,10 @@ word = "";
 
 prevElem = null;
 prevPrevElem = null;
+timer = null;
 
 function startTimer() {
-  var timer = setInterval(function() {
+  timer = setInterval(function() {
     document.getElementById("timer").innerHTML = timeLeft;
     timeLeft -= 1;
     if (timeLeft == 0) {
@@ -24,15 +25,23 @@ function startTimer() {
   }, 1000);
 }
 
-function stop(timer) {
-  clearInterval(timer);
-  saveBoardResult();
-  toMenu();
+function stopTimer() {
+  if (timer != null) {
+    clearInterval(timer);
+    saveBoardResult();
+  }
 }
 
 function toMenu() {
   document.getElementById("game").style.display = "none";
   document.getElementById("menu").style.display = "inline";
+  playable = true;
+  found_words = [];
+  score = 0;
+  document.getElementById("found").innerHTML = "";
+  document.getElementById("score").innerHTML = "";
+  document.getElementById("board").classList.remove("unplayable");
+  loadBoardList();
 }
 
 playable = true;
@@ -132,6 +141,7 @@ function makeUnplayable() {
   playable = false;
   document.getElementById("board").className += " unplayable";
   document.getElementById("saveButton").style.display = "none";
+  document.getElementById("menuButton").style.display = "inline";
   getBoardResults();
 }
 
@@ -143,15 +153,23 @@ function setLettersFromDataset(event) {
   console.log("Clicked " + event);
   boardData = JSON.parse(event.target.dataset.json)
   setLetters(boardData);
+  sheetRow = event.target.dataset.sheetRow;
+  document.getElementById("saveButton").style.display = "inline";
+  document.getElementById("menuButton").style.display = "none";
+  document.getElementById("boardResults").innerHTML = "";
   if (event.target.dataset.playable != "true") {
     makeUnplayable();
+  } else {
+    playable = true;
   }
-  sheetRow = event.target.dataset.sheetRow;
   document.getElementById("game").style.display = "inline";
   document.getElementById("menu").style.display = "none";
-  startTimer();
-  document.getElementById("boardList").innerHTML = "";
-  document.getElementById("saveButton").style.display = "inline";
+  if (playable) {
+    startTimer();
+  }
+  document.getElementById("solvedByMe").innerHTML = "";
+  document.getElementById("solvedBySomeone").innerHTML = "";
+  document.getElementById("unsolved").innerHTML = "";
 }
 
 function setLetters(boardData) {
