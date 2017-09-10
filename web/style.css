@@ -8,7 +8,7 @@ body {
   --boardSize: 3;
 }
 
-.board2 {
+#board {
   display: grid;
   grid-auto-rows: 100px;
   grid-template-columns: repeat(var(--boardSize), 100px);
