@@ -6,24 +6,24 @@ import java.util.*;
 
 public class BoardGenerator {
     private ArrayList<String> vocab;
-    String[] alphabet;
+    private String[] alphabet;
     private double[] letterFreqs;
     private Random random;
     private static int[] nextRowOffset = new int[] {-1, -1, 0, 1, 1, 1, 0, -1};
     private static int[] nextColOffset = new int[] {0, 1, 1, 1, 0, -1, -1, -1};
 
-    BoardGenerator(File file) throws IOException {
+    public BoardGenerator(File file) throws IOException {
         this(readVocabulary(file));
     }
 
-    BoardGenerator(ArrayList<String> vocabulary) {
+    public BoardGenerator(ArrayList<String> vocabulary) {
         vocabulary.sort(Comparator.naturalOrder());
         this.vocab = vocabulary;
         this.getLetterFreqs();
         this.random = new Random();
     }
 
-    Board generateBoard(int size, int timeSeconds) {
+    public Board generateBoard(int size, int timeSeconds, int scoreThreshold) {
         while (true) {
             Board board = new Board();
             board.size = size;
@@ -35,7 +35,7 @@ public class BoardGenerator {
                 }
             }
             boolean covered = solveBoard(board);
-            if (covered) return board;
+            if (covered && board.score >= scoreThreshold) return board;
         }
     }
 
@@ -119,6 +119,7 @@ public class BoardGenerator {
 
         board.words = new ArrayList<>();
         board.words.addAll(words);
+        board.setScoreFromWords();
 
         boolean allCovered = true;
         for (int row = 0; row < board.size; row++) {
@@ -229,7 +230,7 @@ public class BoardGenerator {
         boardGenerator.solveBoard(board);
         System.out.println(board.asJson());
 
-        Board board2 = boardGenerator.generateBoard(5, 200);
+        Board board2 = boardGenerator.generateBoard(5, 200, 0);
         System.out.println(board2.asJson());
 
         //ClassLoader classLoader = boardGenerator.getClass().getClassLoader();
@@ -242,7 +243,7 @@ public class BoardGenerator {
             BoardGenerator boardGenerator2 = new BoardGenerator(file);
             System.out.println(Arrays.toString(boardGenerator2.alphabet));
             for (int i = 0; i < 10; ++i) {
-                System.out.println(boardGenerator2.generateBoard(3, 60).asJson());
+                System.out.println(boardGenerator2.generateBoard(3, 60, 25).asJson());
             }
         }
     }

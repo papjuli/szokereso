@@ -8,6 +8,19 @@ class Board {
     int size;
     int timeSeconds;
     List<String> words;
+    int score;
+
+    void setScoreFromWords() {
+        score = 0;
+        for (String word: words) {
+            int length = word.length();
+            if (length == 2) {
+                score += 1;
+            } else {
+                score += (length * length - 5 * length + 10) / 2;
+            }
+        }
+    }
 
     String asJson() {
         StringBuilder result = new StringBuilder();
@@ -31,8 +44,12 @@ class Board {
             }
             result.append("]");
         }
-        result.append("], \"words\": [");
+        result.append("]");
 
+        result.append(", \"totalScore\": ");
+        result.append(score);
+
+        result.append(", \"words\": [");
         boolean firstWord = true;
         for (String word : words) {
             if (!firstWord) result.append(",");

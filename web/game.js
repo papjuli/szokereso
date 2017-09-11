@@ -101,15 +101,19 @@ function guessWord() {
   if (szk.boardData.words.indexOf(szk.word) != -1) {
     if (szk.found_words.indexOf(szk.word) == -1) {
       document.getElementById("found").innerHTML += " " + szk.word;
-      var length = szk.word.length;
-      if (length == 2) {
-        szk.score += 1;
-      } else {
-        szk.score += (length * length - 5 * length + 10) / 2;
-      }
+      szk.score += scoreOf(szk.word);
       document.getElementById("score").innerHTML = szk.score;
       szk.found_words.push(szk.word);
     }
+  }
+}
+
+function scoreOf(word) {
+  var length = word.length;
+  if (length == 2) {
+    return 1;
+  } else {
+    return (length * length - 5 * length + 10) / 2;
   }
 }
 
@@ -162,6 +166,14 @@ function setLetters(boardData) {
   szk.timeLeft = boardData.timeSeconds;
   document.getElementById("board").innerHTML = "";
   document.getElementById("board").style.setProperty("--boardSize", boardData.size);
+  var totalScore = boardData.totalScore
+  if (totalScore == undefined) {
+    totalScore = 0;
+    for (var i = 0; i < boardData.words.length; i++) {
+      totalScore += scoreOf(boardData.words[i]);
+    }
+  }
+  document.getElementById("totalScore").innerHTML = totalScore;
 
   for (i=0; i<boardData.size; ++i) {
     for (j=0; j<boardData.size; ++j) {
