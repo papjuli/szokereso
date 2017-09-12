@@ -19,7 +19,6 @@ function startTimer() {
 function stopTimer() {
   if (szk.timer != null) {
     clearInterval(szk.timer);
-    //szk.foundWords = szk.foundWords.sort();
     saveBoardResult();
   }
 }
@@ -49,7 +48,6 @@ function mytouchstart(event) {
   szk.prevPrevElem = null;
   szk.word = elem.innerHTML;
   mark(elem);
-  //showCurrentGuess();
 }
 
 function mytouchmove(event) {
@@ -65,7 +63,6 @@ function mytouchmove(event) {
   if (elem == szk.prevPrevElem) {
     unmark(szk.prevElem);
     szk.word = szk.word.slice(0, szk.word.length - 1);
-    //showCurrentGuess();
     szk.prevElem = elem;
     szk.prevPrevElem = null;
     return;
@@ -80,17 +77,14 @@ function mytouchmove(event) {
     return;
   }
   szk.word = szk.word + elem.innerHTML;
-  //showCurrentGuess();
   mark(elem);
   szk.prevPrevElem = szk.prevElem;
   szk.prevElem = elem;
 }
 
 function bodyTouchMove(event) {
-  console.log("In bodyTouchMove");
   if (szk.playable) {
     event.preventDefault();
-    console.log("Prevented");
   }
 }
 
@@ -98,7 +92,6 @@ function mytouchend(event) {
   if (!szk.playable) return;
   guessWord();
   szk.word = "";
-  //showCurrentGuess();
   var divs = document.getElementById("board").getElementsByTagName("div");
   for (i=0; i<divs.length; ++i) {
     unmark(divs[i]);
@@ -106,8 +99,6 @@ function mytouchend(event) {
 }
 
 function guessWord() {
-  //if (szk.boardData.words.indexOf(szk.word) != -1) {
-    //if (szk.found_words.indexOf(szk.word) == -1) {
   var length = szk.word.length < 8 ? szk.word.length : "8+";
   var index = szk.remainingWords[length].indexOf(szk.word);
   if (index != -1) {
@@ -118,8 +109,6 @@ function guessWord() {
     document.getElementById("found").innerHTML = szk.foundWords.join(" "); //+= " " + szk.word;
     szk.remainingWords[length].splice(index, 1);
     document.getElementById("remaining-" + length).innerHTML = szk.remainingWords[length].length;
-    console.log(szk.remainingWords);
-    //}
   }
 }
 
@@ -142,10 +131,6 @@ function unmark(elem) {
 
 function isMarked(elem) {
   elem.classList.contains("marked");
-}
-
-function showCurrentGuess() {
-  document.getElementById("guess").innerHTML = szk.word;
 }
 
 function makeUnplayable() {
@@ -208,27 +193,18 @@ function setLetters(boardData) {
 }
 
 function setRemainingWords() {
-  szk.remainingWords = {};
+  szk.remainingWords = [[], [], [], [], [], [], [], []];
+  szk.remainingWords["8+"] = [];
   for (var i = 0; i < szk.boardData.words.length; i++) {
     var word = szk.boardData.words[i];
     var length = word.length < 8 ? word.length : "8+";
-    if (szk.remainingWords[length] == undefined) {
-      szk.remainingWords[length] = [];
-    }
     szk.remainingWords[length].push(word);
   }
   console.log(szk.remainingWords);
   for (var i = 2; i < 8; i++) {
-    if (szk.remainingWords[i] != undefined) {
-      document.getElementById("remaining-"+i).innerHTML = szk.remainingWords[i].length;
-    } else {
-      document.getElementById("remaining-"+i).innerHTML = "-";
-    }
+    var length = szk.remainingWords[i].length;
+    document.getElementById("remaining-"+i).innerHTML = length > 0 ? length : "-";
   }
-  if (szk.remainingWords["8+"] != undefined) {
-    document.getElementById("remaining-8+").innerHTML = szk.remainingWords["8+"].length;
-  } else {
-    document.getElementById("remaining-8+").innerHTML = "-";
-  }
-
+  var length = szk.remainingWords["8+"].length;
+  document.getElementById("remaining-8+").innerHTML = length > 0 ? length : "-";
 }
