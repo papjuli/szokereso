@@ -103,6 +103,7 @@ function getBoardResults() {
 }
 
 function saveBoardResult() {
+  unmarkAll();
   console.log("Saving...");
   var profile = myProfile();
   console.log(profile);

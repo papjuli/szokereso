@@ -99,6 +99,10 @@ function mytouchend(event) {
   guessWord();
   szk.word = "";
   showCurrentGuess();
+  unmarkAll();
+}
+
+function unmarkAll() {
   var divs = document.getElementById("board").getElementsByTagName("div");
   for (i=0; i<divs.length; ++i) {
     unmark(divs[i]);
