@@ -10,9 +10,7 @@
 <body>
 
 <script>
-  document.body.addEventListener('touchmove',
-      function(event) {event.preventDefault();},
-      false);
+  document.body.addEventListener('touchmove', bodyTouchMove, {passive: false});
 </script>
 
 <script type="text/javascript" src="cloud.js"></script>
@@ -70,6 +68,8 @@
   </div>
 </div>
 
+
+<div style="height:1000px" id="filler"></div>
 
 </body>
 </html>
