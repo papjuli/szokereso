@@ -3,7 +3,7 @@ var szk = {
   foundWords: [],
   score: 0,
   word: "",
-  playable: true
+  playable: false
 };
 
 function startTimer() {
@@ -27,7 +27,7 @@ function stopTimer() {
 function toMenu() {
   document.getElementById("game").style.display = "none";
   document.getElementById("menu").style.display = "inline";
-  szk.playable = true;
+  szk.playable = false;
   szk.foundWords = [];
   szk.score = 0;
   document.getElementById("found").innerHTML = "";
@@ -84,6 +84,14 @@ function mytouchmove(event) {
   mark(elem);
   szk.prevPrevElem = szk.prevElem;
   szk.prevElem = elem;
+}
+
+function bodyTouchMove(event) {
+  console.log("In bodyTouchMove");
+  if (szk.playable) {
+    event.preventDefault();
+    console.log("Prevented");
+  }
 }
 
 function mytouchend(event) {
