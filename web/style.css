@@ -8,7 +8,7 @@ body {
   --boardSize: 3;
 }
 
-.board2 {
+#board {
   display: grid;
   grid-auto-rows: calc(80vw/var(--boardSize));
   grid-template-columns: repeat(var(--boardSize), calc(80vw/var(--boardSize)));

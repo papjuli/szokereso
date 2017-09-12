@@ -1,33 +1,25 @@
 
-board = null;
-letters = null;
-words = null;
-timeLeft = null;
-
-sheetRow = -1;
-
-found_words = [];
-score = 0;
-
-word = "";
-
-prevElem = null;
-prevPrevElem = null;
-timer = null;
+var szk = {
+  found_words: [],
+  score: 0,
+  word: "",
+  playable: true
+};
 
 function startTimer() {
-  timer = setInterval(function() {
-    document.getElementById("timer").innerHTML = timeLeft;
-    timeLeft -= 1;
-    if (timeLeft == 0) {
+  szk.timer = setInterval(function() {
+    document.getElementById("timer").innerHTML = szk.timeLeft;
+    szk.timeLeft -= 1;
+    if (szk.timeLeft == 0) {
       stopTimer();
     }
   }, 1000);
 }
 
 function stopTimer() {
-  if (timer != null) {
-    clearInterval(timer);
+  if (szk.timer != null) {
+    clearInterval(szk.timer);
+    szk.found_words = szk.found_words.sort();
     saveBoardResult();
   }
 }
@@ -35,90 +27,93 @@ function stopTimer() {
 function toMenu() {
   document.getElementById("game").style.display = "none";
   document.getElementById("menu").style.display = "inline";
-  playable = true;
-  found_words = [];
-  score = 0;
+  szk.playable = true;
+  szk.found_words = [];
+  szk.score = 0;
   document.getElementById("found").innerHTML = "";
   document.getElementById("score").innerHTML = "";
   document.getElementById("timer").innerHTML = "";
+  document.getElementById("boardResults").innerHTML = "";
   document.getElementById("board").classList.remove("unplayable");
   loadBoardList();
 }
 
-playable = true;
-
 function mytouchstart(event) {
-  if (!playable) return;
-  touch = event.touches[0];
-  elem = document.elementFromPoint(touch.clientX, touch.clientY);
+  if (!szk.playable) return;
+  var touch = event.touches[0];
+  var elem = document.elementFromPoint(touch.clientX, touch.clientY);
   if (elem.dataset.letter != 1) {
     return;
   }
-  prevElem = elem;
-  prevPrevElem = null;
-  word = elem.innerHTML;
+  szk.prevElem = elem;
+  szk.prevPrevElem = null;
+  szk.word = elem.innerHTML;
   mark(elem);
   showCurrentGuess();
 }
 
 function mytouchmove(event) {
-  if (!playable) return;
-  touch = event.touches[0];
-  elem = document.elementFromPoint(touch.clientX, touch.clientY);
+  if (!szk.playable) return;
+  var touch = event.touches[0];
+  var elem = document.elementFromPoint(touch.clientX, touch.clientY);
   if (elem.dataset.letter != 1) {
     return;
   }
-  if (elem == prevElem) {
+  if (elem == szk.prevElem) {
     return;
   }
-  if (elem == prevPrevElem) {
-    unmark(prevElem);
-    word = word.slice(0, word.length - 1);
+  if (elem == szk.prevPrevElem) {
+    unmark(szk.prevElem);
+    szk.word = szk.word.slice(0, szk.word.length - 1);
     showCurrentGuess();
-    prevElem = elem;
-    prevPrevElem = null;
+    szk.prevElem = elem;
+    szk.prevPrevElem = null;
     return;
   }
   if (isMarked(elem)) {
     return;
   }
-  dr = elem.dataset.row - prevElem.dataset.row;
-  dc = elem.dataset.col - prevElem.dataset.col;
-  d = dr*dr + dc*dc;
+  var dr = elem.dataset.row - szk.prevElem.dataset.row;
+  var dc = elem.dataset.col - szk.prevElem.dataset.col;
+  var d = dr*dr + dc*dc;
   if (d == 0 || d > 2) {
     return;
   }
-  word = word + elem.innerHTML;
+  szk.word = szk.word + elem.innerHTML;
   showCurrentGuess();
   mark(elem);
-  prevPrevElem = prevElem;
-  prevElem = elem;
+  szk.prevPrevElem = szk.prevElem;
+  szk.prevElem = elem;
 }
 
 function mytouchend(event) {
-  if (!playable) return;
+  if (!szk.playable) return;
   guessWord();
-  word = "";
+  szk.word = "";
   showCurrentGuess();
-  divs = document.getElementById("board").getElementsByTagName("div");
+  var divs = document.getElementById("board").getElementsByTagName("div");
   for (i=0; i<divs.length; ++i) {
     unmark(divs[i]);
   }
 }
 
 function guessWord() {
-  if (words.indexOf(word) != -1) {
-    if (found_words.indexOf(word) == -1) {
-      document.getElementById("found").innerHTML += " " + word;
-      length = word.length;
-      if (length == 2) {
-        score += 1;
-      } else {
-        score += (length * length - 5 * length + 10) / 2;
-      }
-      document.getElementById("score").innerHTML = score;
-      found_words.push(word);
+  if (szk.boardData.words.indexOf(szk.word) != -1) {
+    if (szk.found_words.indexOf(szk.word) == -1) {
+      document.getElementById("found").innerHTML += " " + szk.word;
+      szk.score += scoreOf(szk.word);
+      document.getElementById("score").innerHTML = szk.score;
+      szk.found_words.push(szk.word);
     }
+  }
+}
+
+function scoreOf(word) {
+  var length = word.length;
+  if (length == 2) {
+    return 1;
+  } else {
+    return (length * length - 5 * length + 10) / 2;
   }
 }
 
@@ -135,51 +130,50 @@ function isMarked(elem) {
 }
 
 function showCurrentGuess() {
-  document.getElementById("result").innerHTML = word;
+  document.getElementById("guess").innerHTML = szk.word;
 }
 
 function makeUnplayable() {
-  playable = false;
+  szk.playable = false;
   document.getElementById("board").className += " unplayable";
-  document.getElementById("saveButton").style.display = "none";
-  document.getElementById("endOfGameButtons").style.display = "inline";
+  document.getElementById("gameplay").style.display = "none";
+  document.getElementById("results").style.display = "inline";
   getBoardResults();
 }
 
-function updateBoardResults(results) {
-  document.getElementById("boardResults").innerHTML = results + "<br>All words: " + words;
-}
-
-function setLettersFromDataset(event) {
+function startGame(event) {
   console.log("Clicked " + event);
-  boardData = JSON.parse(event.target.dataset.json)
-  setLetters(boardData);
-  sheetRow = event.target.dataset.sheetRow;
-  document.getElementById("saveButton").style.display = "inline";
-  document.getElementById("endOfGameButtons").style.display = "none";
-  document.getElementById("boardResults").innerHTML = "";
+  szk.boardData = JSON.parse(event.target.dataset.json)
+  setLetters(szk.boardData);
+  szk.sheetRow = event.target.dataset.sheetRow;
+  document.getElementById("game").style.display = "inline";
+    document.getElementById("menu").style.display = "none";
+  document.getElementById("gameplay").style.display = "inline";
+  document.getElementById("results").style.display = "none";
   if (event.target.dataset.playable != "true") {
     makeUnplayable();
   } else {
-    playable = true;
+    szk.playable = true;
   }
-  document.getElementById("game").style.display = "inline";
-  document.getElementById("menu").style.display = "none";
-  if (playable) {
+
+  if (szk.playable) {
     startTimer();
   }
-  document.getElementById("solvedByMe").innerHTML = "";
-  document.getElementById("solvedBySomeone").innerHTML = "";
-  document.getElementById("unsolved").innerHTML = "";
 }
 
 function setLetters(boardData) {
   console.log(boardData)
-  words = boardData.words;
-  letters = boardData.letters;
-  timeLeft = boardData.timeSeconds;
+  szk.timeLeft = boardData.timeSeconds;
   document.getElementById("board").innerHTML = "";
   document.getElementById("board").style.setProperty("--boardSize", boardData.size);
+  var totalScore = boardData.totalScore
+  if (totalScore == undefined) {
+    totalScore = 0;
+    for (var i = 0; i < boardData.words.length; i++) {
+      totalScore += scoreOf(boardData.words[i]);
+    }
+  }
+  document.getElementById("totalScore").innerHTML = totalScore;
 
   for (i=0; i<boardData.size; ++i) {
     for (j=0; j<boardData.size; ++j) {

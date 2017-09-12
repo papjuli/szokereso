@@ -42,22 +42,32 @@
 </div>
 
 <div id="game">
-  <div class="board2" data-letter=0 id="board"></div>
+  <div data-letter=0 id="board"></div>
 
-  <div id="result"></div>
+  <div id = "gameplay">
+    <div id="guess"></div>
 
-  <div id="found"></div>
+    <div id="found"></div>
 
-  <div id="score">0</div>
+    <div id="score">0</div>
 
-  <div id="timer"></div>
+    <div id="timer"></div>
 
-  <button id="saveButton" onclick="stopTimer()">Save</button>
+    <button id="saveButton" onclick="stopTimer()">Save</button>
+  </div>
+  
+  <div id="results">
     <div id="endOfGameButtons">
-        <button id="menuButton" onclick="toMenu()">Back to menu</button>
-        <button id="refreshResults" onclick="getBoardResults()">Refresh results</button>
+      <button id="menuButton" onclick="toMenu()">Back to menu</button>
+      <button id="refreshResults" onclick="getBoardResults()">Refresh results</button>
     </div>
-    <div id="boardResults"></div>
+    
+    <ul id="boardResults"></ul>
+    
+    <div>All words: <div id="allWords"></div><br>
+      Total score: <div id="totalScore"></div>
+    </div>
+  </div>
 </div>
 
 
