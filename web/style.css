@@ -16,17 +16,18 @@ button {
   display: grid;
   grid-auto-rows: calc(80vw/var(--boardSize));
   grid-template-columns: repeat(var(--boardSize), calc(80vw/var(--boardSize)));
-  grid-gap: 30px;
+  grid-gap: 50px;
+  margin-bottom: 50px;
 }
 
 .letter {
   border-style: solid;
   border-color: darkblue;
-  border-radius: 10px;
+  border-radius: 20px;
   padding: 10px;
   line-height: calc(80vw/var(--boardSize) - 30px);
   text-align: center;
-  font-size: 60px;
+  font-size: calc(50vw/var(--boardSize));
   text-transform: uppercase;
 }
 

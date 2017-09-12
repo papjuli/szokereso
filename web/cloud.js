@@ -127,7 +127,7 @@ function saveBoardResult() {
         resource: {
           values: [
             [profile.getEmail(), profile.getName(), szk.score,
-             szk.found_words.length == 0 ? " " : szk.found_words.join(", ")],
+             szk.foundWords.length == 0 ? " " : szk.foundWords.join(", ")],
           ],
         }
       }).then(function(err, result) {
