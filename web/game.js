@@ -92,6 +92,10 @@ function mytouchend(event) {
   if (!szk.playable) return;
   guessWord();
   szk.word = "";
+  unmarkAll();
+}
+
+function unmarkAll() {
   var divs = document.getElementById("board").getElementsByTagName("div");
   for (i=0; i<divs.length; ++i) {
     unmark(divs[i]);
