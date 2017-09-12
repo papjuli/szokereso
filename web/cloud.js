@@ -126,7 +126,7 @@ function saveBoardResult() {
         valueInputOption: "RAW",
         resource: {
           values: [
-            [profile.getEmail(), profile.getName(), szk.score, szk.found_words.join(", ")],
+            [profile.getEmail(), profile.getName(), szk.score, szk.foundWords.join(", ")],
           ],
         }
       }).then(function(err, result) {

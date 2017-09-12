@@ -1,6 +1,6 @@
 
 var szk = {
-  found_words: [],
+  foundWords: [],
   score: 0,
   word: "",
   playable: true
@@ -19,7 +19,7 @@ function startTimer() {
 function stopTimer() {
   if (szk.timer != null) {
     clearInterval(szk.timer);
-    szk.found_words = szk.found_words.sort();
+    //szk.foundWords = szk.foundWords.sort();
     saveBoardResult();
   }
 }
@@ -28,7 +28,7 @@ function toMenu() {
   document.getElementById("game").style.display = "none";
   document.getElementById("menu").style.display = "inline";
   szk.playable = true;
-  szk.found_words = [];
+  szk.foundWords = [];
   szk.score = 0;
   document.getElementById("found").innerHTML = "";
   document.getElementById("score").innerHTML = "";
@@ -49,7 +49,7 @@ function mytouchstart(event) {
   szk.prevPrevElem = null;
   szk.word = elem.innerHTML;
   mark(elem);
-  showCurrentGuess();
+  //showCurrentGuess();
 }
 
 function mytouchmove(event) {
@@ -65,7 +65,7 @@ function mytouchmove(event) {
   if (elem == szk.prevPrevElem) {
     unmark(szk.prevElem);
     szk.word = szk.word.slice(0, szk.word.length - 1);
-    showCurrentGuess();
+    //showCurrentGuess();
     szk.prevElem = elem;
     szk.prevPrevElem = null;
     return;
@@ -80,7 +80,7 @@ function mytouchmove(event) {
     return;
   }
   szk.word = szk.word + elem.innerHTML;
-  showCurrentGuess();
+  //showCurrentGuess();
   mark(elem);
   szk.prevPrevElem = szk.prevElem;
   szk.prevElem = elem;
@@ -90,7 +90,7 @@ function mytouchend(event) {
   if (!szk.playable) return;
   guessWord();
   szk.word = "";
-  showCurrentGuess();
+  //showCurrentGuess();
   var divs = document.getElementById("board").getElementsByTagName("div");
   for (i=0; i<divs.length; ++i) {
     unmark(divs[i]);
@@ -98,13 +98,20 @@ function mytouchend(event) {
 }
 
 function guessWord() {
-  if (szk.boardData.words.indexOf(szk.word) != -1) {
-    if (szk.found_words.indexOf(szk.word) == -1) {
-      document.getElementById("found").innerHTML += " " + szk.word;
-      szk.score += scoreOf(szk.word);
-      document.getElementById("score").innerHTML = szk.score;
-      szk.found_words.push(szk.word);
-    }
+  //if (szk.boardData.words.indexOf(szk.word) != -1) {
+    //if (szk.found_words.indexOf(szk.word) == -1) {
+  var length = szk.word.length < 8 ? szk.word.length : "8+";
+  var index = szk.remainingWords[length].indexOf(szk.word);
+  if (index != -1) {
+    szk.score += scoreOf(szk.word);
+    document.getElementById("score").innerHTML = szk.score;
+    szk.foundWords.push(szk.word);
+    szk.foundWords.sort();
+    document.getElementById("found").innerHTML = szk.foundWords.join(" "); //+= " " + szk.word;
+    szk.remainingWords[length].splice(index, 1);
+    document.getElementById("remaining-" + length).innerHTML = szk.remainingWords[length].length;
+    console.log(szk.remainingWords);
+    //}
   }
 }
 
@@ -143,11 +150,12 @@ function makeUnplayable() {
 
 function startGame(event) {
   console.log("Clicked " + event);
-  szk.boardData = JSON.parse(event.target.dataset.json)
+  szk.boardData = JSON.parse(event.target.dataset.json);
+  setRemainingWords();
   setLetters(szk.boardData);
   szk.sheetRow = event.target.dataset.sheetRow;
   document.getElementById("game").style.display = "inline";
-    document.getElementById("menu").style.display = "none";
+  document.getElementById("menu").style.display = "none";
   document.getElementById("gameplay").style.display = "inline";
   document.getElementById("results").style.display = "none";
   if (event.target.dataset.playable != "true") {
@@ -189,4 +197,30 @@ function setLetters(boardData) {
       document.getElementById("board").appendChild(d);
     }
   }
+}
+
+function setRemainingWords() {
+  szk.remainingWords = {};
+  for (var i = 0; i < szk.boardData.words.length; i++) {
+    var word = szk.boardData.words[i];
+    var length = word.length < 8 ? word.length : "8+";
+    if (szk.remainingWords[length] == undefined) {
+      szk.remainingWords[length] = [];
+    }
+    szk.remainingWords[length].push(word);
+  }
+  console.log(szk.remainingWords);
+  for (var i = 2; i < 8; i++) {
+    if (szk.remainingWords[i] != undefined) {
+      document.getElementById("remaining-"+i).innerHTML = szk.remainingWords[i].length;
+    } else {
+      document.getElementById("remaining-"+i).innerHTML = "-";
+    }
+  }
+  if (szk.remainingWords["8+"] != undefined) {
+    document.getElementById("remaining-8+").innerHTML = szk.remainingWords["8+"].length;
+  } else {
+    document.getElementById("remaining-8+").innerHTML = "-";
+  }
+
 }
