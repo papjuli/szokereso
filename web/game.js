@@ -113,6 +113,9 @@ function guessWord() {
     document.getElementById("found").innerHTML = szk.foundWords.join(" "); //+= " " + szk.word;
     szk.remainingWords[length].splice(index, 1);
     document.getElementById("remaining-" + length).innerHTML = szk.remainingWords[length].length;
+    if (szk.foundWords.length == szk.boardData.words.length) {
+      stopTimer();
+    }
   }
 }
 
