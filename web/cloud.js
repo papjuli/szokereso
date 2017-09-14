@@ -14,10 +14,30 @@ function initClient() {
     clientId: '544351928107-lnucrgo39ustk9aq28s7hnp9kdto6k5j.apps.googleusercontent.com',
     scope: 'https://www.googleapis.com/auth/spreadsheets'
   }).then(function() {
-    var profile = myProfile();
-    document.getElementById("whoami").innerHTML = profile.getEmail() + " " + profile.getName();
-    loadBoardList();
+    var auth2 = gapi.auth2.getAuthInstance();
+    if (auth2.isSignedIn.get()) {
+      signedIn(auth2.currentUser.get());
+    } else {
+      signedOut();
+    }
   });
+}
+
+function signedIn(googleUser) {
+  var profile = googleUser.getBasicProfile();
+  document.getElementById("whoami").innerHTML = profile.getEmail() + " " + profile.getName();
+  document.getElementById("signin-button").style.display = "none";
+  document.getElementById("signout-button").style.display = "inline";
+  loadBoardList(profile);
+}
+
+function signedOut() {
+  document.getElementById("whoami").innerHTML = "";
+  document.getElementById("signin-button").style.display = "inline";
+  document.getElementById("signout-button").style.display = "none";
+  document.getElementById("unsolved").innerHTML = "";
+  document.getElementById("solvedBySomeone").innerHTML = "";
+  document.getElementById("solvedByMe").innerHTML = "";
 }
 
 function myProfile() {
@@ -27,15 +47,18 @@ function myProfile() {
 function handleSignInClick(event) {
   // Ideally the button should only show up after gapi.client.init finishes, so that this
   // handler won't be called before OAuth is initialized.
-  gapi.auth2.getAuthInstance().signIn();
+  gapi.auth2.getAuthInstance().signIn().then(signedIn);
 }
 
 function handleSignOutClick(event) {
-  gapi.auth2.getAuthInstance().signOut();
+  var auth2 = gapi.auth2.getAuthInstance();
+  auth2.signOut().then(signedOut);
 }
 
-function loadBoardList() {
-  var profile = myProfile();
+function loadBoardList(profile) {
+  if (!profile) {
+    profile = myProfile();
+  }
   gapi.client.sheets.spreadsheets.values.get({
     spreadsheetId: '1u9w_rAWrPBUnmQ_G4TYvnIEDifVQg4HWKhbqvFET2Yk',
     range: 'A1:Z9999',

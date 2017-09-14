@@ -22,30 +22,34 @@
 <script></script>
 
 <div id="menu">
-  <button id="signin-button" onclick="handleSignInClick()">Sign In</button>
-  <button id="signout-button" onclick="handleSignOutClick()">Sign Out</button>
+  <button id="signin-button" style="display:none;" onclick="handleSignInClick()">Sign In</button>
+  <button id="signout-button" style="display:none;" onclick="handleSignOutClick()">Sign Out</button>
 
-  <div id="whoami"></div>
+  <span id="whoami"></span>
 
-    <div id="boardList">
-      <p>
-        <div>Unsolved:</div>
-        <div id="unsolved"></div>
-      </p>
+  <div id="boardList">
+    <p>
+      <div>Unsolved:</div>
+      <div id="unsolved"></div>
+    </p>
 
-      <p>
-        <div>Solved by someone:</div>
-        <div id="solvedBySomeone"></div>
-      </p>
+    <p>
+      <div>Solved by someone:</div>
+      <div id="solvedBySomeone"></div>
+    </p>
 
-      <p>
-        <div>Solved by me:</div>
-        <div id="solvedByMe"></div>
-      </p>
-    </div>
+    <p>
+      <div>Solved by me:</div>
+      <div id="solvedByMe"></div>
+    </p>
+  </div>
 </div>
 
 <div id="game">
+  <div id="timer">
+    <p>Time left: <span id="timeLeft"></span> </p>
+  </div>
+  
   <div data-letter=0 id="board"></div>
 
   <div id = "gameplay">
@@ -65,9 +69,7 @@
     <div id="found"></div>
 
     <div id="score">0</div>
-
-    Time left: <div id="timer"></div>
-
+    
     <button id="saveButton" onclick="stopTimer()">Save</button>
   </div>
   

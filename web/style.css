@@ -43,3 +43,8 @@ button {
 .unplayable {
   color: lightgrey;
 }
+
+#timer {
+  text-align: center;
+  padding: 10px;
+}

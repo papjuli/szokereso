@@ -6,9 +6,13 @@ var szk = {
   playable: false
 };
 
+function secondsToString(seconds) {
+  return Math.floor(seconds / 60) + ":" + ("00" + seconds % 60).slice(-2);
+}
+
 function startTimer() {
   szk.timer = setInterval(function() {
-    document.getElementById("timer").innerHTML = szk.timeLeft;
+    document.getElementById("timeLeft").innerHTML = secondsToString(szk.timeLeft);
     szk.timeLeft -= 1;
     if (szk.timeLeft == 0) {
       stopTimer();
@@ -31,7 +35,8 @@ function toMenu() {
   szk.score = 0;
   document.getElementById("found").innerHTML = "";
   document.getElementById("score").innerHTML = "";
-  document.getElementById("timer").innerHTML = "";
+  document.getElementById("timeLeft").innerHTML = secondsToString(szk.timeLeft);
+  document.getElementById("timeLeft").innerHTML = "";
   document.getElementById("boardResults").innerHTML = "";
   document.getElementById("board").classList.remove("unplayable");
   loadBoardList();
@@ -144,6 +149,7 @@ function makeUnplayable() {
   szk.playable = false;
   document.getElementById("board").className += " unplayable";
   document.getElementById("gameplay").style.display = "none";
+  document.getElementById("timer").style.display = "none";
   document.getElementById("results").style.display = "inline";
   getBoardResults();
 }
@@ -157,6 +163,7 @@ function startGame(event) {
   document.getElementById("game").style.display = "inline";
   document.getElementById("menu").style.display = "none";
   document.getElementById("gameplay").style.display = "inline";
+  document.getElementById("timer").style.display = "inline";
   document.getElementById("results").style.display = "none";
   if (event.target.dataset.playable != "true") {
     makeUnplayable();
