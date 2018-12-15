@@ -1,9 +1,10 @@
 {
     "compilerOptions": {
         "target": "es6",
-        "module": "commonjs",
+        "module": "amd",
         "sourceMap": true,
         "allowJs": true,
-        "watch": false
+        "watch": false,
+        "outFile": "../szokereso.js"
     }
 }
