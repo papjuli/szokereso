@@ -38,12 +38,16 @@ class Board {
   public setScoreFromWords(): void {
     this.totalScore = 0;
     for (let word of this.words) {
-      let length = word.length;
-      if (length == 2) {
-        this.totalScore += 1;
-      } else {
-        this.totalScore += Math.floor((length * length - 5 * length + 10) / 2);
-      }
+      this.totalScore += Board.getWordScore(word);
+    }
+  }
+
+  public static getWordScore(word: string): number {
+    let length = word.length;
+    if (length == 2) {
+      return 1;
+    } else {
+      return Math.floor((length * length - 5 * length + 10) / 2);
     }
   }
 

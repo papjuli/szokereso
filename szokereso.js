@@ -29,13 +29,16 @@ class Board {
     setScoreFromWords() {
         this.totalScore = 0;
         for (let word of this.words) {
-            let length = word.length;
-            if (length == 2) {
-                this.totalScore += 1;
-            }
-            else {
-                this.totalScore += Math.floor((length * length - 5 * length + 10) / 2);
-            }
+            this.totalScore += Board.getWordScore(word);
+        }
+    }
+    static getWordScore(word) {
+        let length = word.length;
+        if (length == 2) {
+            return 1;
+        }
+        else {
+            return Math.floor((length * length - 5 * length + 10) / 2);
         }
     }
     static getExampleBoard() {
@@ -231,6 +234,29 @@ class BoardGenerator {
             this.letterFreqs[i] = letterCounts.get(letter) / count;
             i++;
         }
+    }
+}
+class UserState {
+    constructor(name, email) {
+        this.name = name;
+        this.email = email;
+        this.score = 0;
+        this.foundWords = Array();
+        this.startedGame = false;
+    }
+    asJson() {
+        return JSON.stringify(this);
+    }
+    static fromJson(userJson) {
+        let userObj = JSON.parse(userJson);
+        let userState = new UserState(userObj.name, userObj.email);
+        for (var prop in userObj)
+            userState[prop] = userObj[prop];
+        return userState;
+    }
+    addFoundWord(word) {
+        this.foundWords.push(word);
+        this.score += Board.getWordScore(word);
     }
 }
 //# sourceMappingURL=szokereso.js.map
