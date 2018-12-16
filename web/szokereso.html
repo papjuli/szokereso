@@ -19,6 +19,15 @@
       console.log('Service worker registration failed:', error);
     });
   }
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.userChoice.then((choiceResult) => {
+      if (choiceResult.outcome === 'accepted') {
+        console.log('User accepted the A2HS prompt');
+      } else {
+        console.log('User dismissed the A2HS prompt');
+      }
+    });
+  });
 </script>
 
 <script type="text/javascript" src="cloud.js"></script>
