@@ -14,6 +14,7 @@
   document.body.addEventListener('touchmove', bodyTouchMove, {passive: false});
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('service-worker.js');
+    console.log("Registered service worker");
   }
 </script>
 
