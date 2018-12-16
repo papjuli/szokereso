@@ -1,0 +1,20 @@
+{
+  "name": "Szókereső",
+  "short_name": "Szókereső",
+  "start_url": "/szokereso/web/szokereso.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "scope": "/szokereso/web",
+  "icons": [
+    {
+      "src": "/web/icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/web/icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+}
