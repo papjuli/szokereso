@@ -1,4 +1,5 @@
-var hungarian_vocabulary = [
+define({
+  words: [
 "ad",
 "ah",
 "az",
@@ -105284,3 +105285,4 @@ var hungarian_vocabulary = [
 "zsidócseresznye",
 "zsoldoshadsereg"
 ]
+})

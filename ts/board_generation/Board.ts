@@ -14,6 +14,17 @@ class Board {
     }
     this.totalScore = 0;
   }
+ 
+  public asJson(): string {
+    return JSON.stringify(this);
+  }
+
+  public static fromJson(boardJson: string): Board {
+    let boardObj = JSON.parse(boardJson);
+    let board = new Board(boardObj.size, boardObj.timeSeconds);
+    for (var prop in boardObj) board[prop] = boardObj[prop];
+    return board;
+  }
 
   public setWords(words: Set<string>): void {
     this.words = new Array<string>();
@@ -22,6 +33,18 @@ class Board {
     }
     this.words.sort();
     this.setScoreFromWords();
+  }
+  
+  public setScoreFromWords(): void {
+    this.totalScore = 0;
+    for (let word of this.words) {
+      let length = word.length;
+      if (length == 2) {
+        this.totalScore += 1;
+      } else {
+        this.totalScore += Math.floor((length * length - 5 * length + 10) / 2);
+      }
+    }
   }
 
   public static getExampleBoard(): Board {
@@ -39,21 +62,5 @@ class Board {
     board.words.push("ŐK");
     board.words.push("ŐS");
     return board;
-  }
-  
-  public asJson(): string {
-    return JSON.stringify(this);
-  }
-  
-  public setScoreFromWords(): void {
-    this.totalScore = 0;
-    for (let word of this.words) {
-      let length = word.length;
-      if (length == 2) {
-        this.totalScore += 1;
-      } else {
-        this.totalScore += Math.floor((length * length - 5 * length + 10) / 2);
-      }
-    }
   }
 }
