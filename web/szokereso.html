@@ -5,12 +5,29 @@
     <title>Szókereső</title>
     <script src="game.js"></script>
     <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.webmanifest">
 </head>
 
 <body>
 
 <script>
   document.body.addEventListener('touchmove', bodyTouchMove, {passive: false});
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/szokereso/web/service-worker.js').then(function(registration) {
+      console.log('Service worker registration succeeded:', registration);
+    }, /*catch*/ function(error) {
+      console.log('Service worker registration failed:', error);
+    });
+  }
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.userChoice.then((choiceResult) => {
+      if (choiceResult.outcome === 'accepted') {
+        console.log('User accepted the A2HS prompt');
+      } else {
+        console.log('User dismissed the A2HS prompt');
+      }
+    });
+  });
 </script>
 
 <script type="text/javascript" src="cloud.js"></script>
@@ -49,7 +66,8 @@
   <div id="timer">
     <p>Time left: <span id="timeLeft"></span> </p>
   </div>
-  
+
+  <div id="currentWord"></div>  
   <div data-letter=0 id="board"></div>
 
   <div id="gameplay">
