@@ -7,12 +7,12 @@
   "scope": "/szokereso/web",
   "icons": [
     {
-      "src": "/web/icon-192.png",
+      "src": "/szokereso/web/icon-192.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "/web/icon-512.png",
+      "src": "/szokereso/web/icon-512.png",
       "type": "image/png",
       "sizes": "512x512"
     }
