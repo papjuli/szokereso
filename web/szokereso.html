@@ -13,8 +13,11 @@
 <script>
   document.body.addEventListener('touchmove', bodyTouchMove, {passive: false});
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('service-worker.js');
-    console.log("Registered service worker");
+    navigator.serviceWorker.register('/szokereso/web/service-worker.js').then(function(registration) {
+      console.log('Service worker registration succeeded:', registration);
+    }, /*catch*/ function(error) {
+      console.log('Service worker registration failed:', error);
+    });
   }
 </script>
 
