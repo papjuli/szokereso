@@ -1,13 +1,111 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset=utf-8>
-    <title>Typescript szókereső próba</title>
-    <script data-main="scripts/main" src="scripts/require.js"></script>
-    <script src="szokereso.js"></script>
-  </head>
-  <body>
-    <div id="mydiv"></div>
-    <script src="scripts/main.js"></script>
-  </body>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Szókereső</title>
+    <script src="/scripts/game.js"></script>
+    <link rel="stylesheet" href="/style.css">
+    <link rel="manifest" href="/manifest.webmanifest">
+</head>
+
+<body>
+
+<script>
+  document.body.addEventListener('touchmove', bodyTouchMove, {passive: false});
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/scripts/service-worker.js').then(function(registration) {
+      console.log('Service worker registration succeeded:', registration);
+    }, /*catch*/ function(error) {
+      console.log('Service worker registration failed:', error);
+    });
+  }
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.userChoice.then((choiceResult) => {
+      if (choiceResult.outcome === 'accepted') {
+        console.log('User accepted the A2HS prompt');
+      } else {
+        console.log('User dismissed the A2HS prompt');
+      }
+    });
+  });
+</script>
+
+<script type="text/javascript" src="/scripts/cloud.js"></script>
+
+<script async defer src="https://apis.google.com/js/api.js"
+        onload="this.onload=function(){}; handleClientLoad();"
+        onreadystatechange="if (this.readyState === 'complete') this.onload();">
+</script>
+
+<div id="menu">
+  <button id="signin-button" style="display:none;" onclick="handleSignInClick()">Sign In</button>
+  <button id="signout-button" style="display:none;" onclick="handleSignOutClick()">Sign Out</button>
+
+  <span id="whoami"></span>
+
+  <div id="boardList">
+    <p>
+      <div>Unsolved:</div>
+      <div id="unsolved"></div>
+    </p>
+
+    <p>
+      <div>Solved by someone:</div>
+      <div id="solvedBySomeone"></div>
+    </p>
+
+    <p>
+      <div>Solved by me:</div>
+      <div id="solvedByMe"></div>
+    </p>
+  </div>
+</div>
+
+<div id="game">
+  <div id="timer">
+    <p>Time left: <span id="timeLeft"></span> </p>
+  </div>
+
+  <div id="currentWord"></div>  
+  <div data-letter=0 id="board"></div>
+
+  <div id="gameplay">
+    <table>
+      <tr><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8+</th></tr>
+      <tr id="remainingWordCounts">
+        <td id="remaining-2"></td>
+        <td id="remaining-3"></td>
+        <td id="remaining-4"></td>
+        <td id="remaining-5"></td>
+        <td id="remaining-6"></td>
+        <td id="remaining-7"></td>
+        <td id="remaining-8+"></td>
+      </tr>
+    </table>
+
+    <div id="found"></div>
+
+    <div id="score">0</div>
+    
+    <button id="saveButton" onclick="stopTimer()">Save</button>
+  </div>
+  
+  <div id="results">
+    <div id="endOfGameButtons">
+      <button id="menuButton" onclick="toMenu()">Back to menu</button>
+      <button id="refreshResults" onclick="getBoardResults()">Refresh results</button>
+    </div>
+    
+    <ul id="boardResults"></ul>
+    
+    <div>All words: <div id="allWords"></div><br>
+      Total score: <div id="totalScore"></div>
+    </div>
+  </div>
+</div>
+
+
+<div style="height:1000px" id="filler"></div>
+
+</body>
 </html>
