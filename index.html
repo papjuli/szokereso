@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <title>Szókereső</title>
-    <script src="/scripts/game.js"></script>
-    <link rel="stylesheet" href="/style.css">
-    <link rel="manifest" href="/manifest.webmanifest">
+    <script src="scripts/game.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.webmanifest">
 </head>
 
 <body>
@@ -13,7 +13,7 @@
 <script>
   document.body.addEventListener('touchmove', bodyTouchMove, {passive: false});
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/scripts/service-worker.js').then(function(registration) {
+    navigator.serviceWorker.register('scripts/service-worker.js').then(function(registration) {
       console.log('Service worker registration succeeded:', registration);
     }, /*catch*/ function(error) {
       console.log('Service worker registration failed:', error);
@@ -30,7 +30,7 @@
   });
 </script>
 
-<script type="text/javascript" src="/scripts/cloud.js"></script>
+<script type="text/javascript" src="scripts/cloud.js"></script>
 
 <script async defer src="https://apis.google.com/js/api.js"
         onload="this.onload=function(){}; handleClientLoad();"
