@@ -2,6 +2,7 @@ body {
   margin: 40px;
   font-family: "Arial", sans-serif;
   font-size: 30px;
+  overscroll-behavior: none;
 }
 
 button {
