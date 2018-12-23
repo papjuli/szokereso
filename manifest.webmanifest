@@ -1,10 +1,10 @@
 {
   "name": "Szókereső",
   "short_name": "Szókereső",
-  "start_url": "/index.html",
+  "start_url": "/szokereso/index.html",
   "display": "standalone",
   "orientation": "portrait",
-  "scope": "/",
+  "scope": "/szokereso",
   "icons": [
     {
       "src": "images/icon-192.png",
