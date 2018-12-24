@@ -1,11 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Szókereső</title>
-    <script src="scripts/game.js"></script>
-    <link rel="stylesheet" href="style.css">
-    <link rel="manifest" href="manifest.webmanifest">
+  <meta charset="UTF-8">
+  <title>Szókereső</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="manifest.webmanifest">
+  <script type="text/javascript" src="scripts/game.js"></script>
+  <script type="text/javascript" src="scripts/cloud.js"></script>
+
+  <script async defer src="https://apis.google.com/js/api.js"
+          onload="this.onload=function(){}; handleClientLoad();"
+          onreadystatechange="if (this.readyState === 'complete') this.onload();">
+  </script>
 </head>
 
 <body>
@@ -30,19 +36,18 @@
   });
 </script>
 
-<script type="text/javascript" src="scripts/cloud.js"></script>
-
-<script async defer src="https://apis.google.com/js/api.js"
-        onload="this.onload=function(){}; handleClientLoad();"
-        onreadystatechange="if (this.readyState === 'complete') this.onload();">
-</script>
-
 <div id="menu">
   <button id="signin-button" style="display:none;" onclick="handleSignInClick()">Sign In</button>
   <button id="signout-button" style="display:none;" onclick="handleSignOutClick()">Sign Out</button>
 
   <span id="whoami"></span>
 
+  <p>
+    Latest game:
+    <div id="latestGame"></div>
+  </p>
+
+  <!-- 
   <div id="boardList">
     <p>
       <div>Unsolved:</div>
@@ -59,6 +64,7 @@
       <div id="solvedByMe"></div>
     </p>
   </div>
+  -->
 </div>
 
 <div id="game">
