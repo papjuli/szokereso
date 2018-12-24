@@ -3,7 +3,7 @@ class Board {
   public words: Array<string>;
   public totalScore: number;
   public size: number;
-  private timeSeconds: number;
+  public timeSeconds: number;
 
   constructor (size: number, timeSeconds: number) {
     this.size = size;

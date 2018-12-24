@@ -237,8 +237,9 @@ class BoardGenerator {
     }
 }
 class Game {
-    constructor(board) {
+    constructor(board, manager) {
         this.board = board;
+        this.manager = manager;
         this.playable = true;
         this.selectedLetters = new Array();
         let boardDiv = this.boardDiv();
@@ -258,6 +259,10 @@ class Game {
                 boardDiv.appendChild(letter);
             }
         }
+    }
+    disable() {
+        this.playable = false;
+        this.unmarkAll();
     }
     boardDiv() {
         let boardDiv = document.getElementById("board");
@@ -283,7 +288,12 @@ class Game {
         this.selectedLetters.push(target[1]);
         target[0].classList.add("marked");
         this.word += this.board.letters[target[1][0]][target[1][1]];
-        // TODO: Notify whoever can update the word on the ui to do so.
+        this.manager.partialWord(this.word);
+    }
+    unmarkAll() {
+        for (let child of this.boardDiv().children) {
+            child.classList.remove("marked");
+        }
     }
     touchStart(event) {
         this.selectedLetters.length = 0;
@@ -311,11 +321,50 @@ class Game {
         this.addLetter(target);
     }
     touchEnd(event) {
-        // TODO: Notify whoever keeps track of guessed words and scores.
+        this.manager.finalWord(this.word);
         this.word = "";
         this.selectedLetters.length = 0;
-        for (let child of this.boardDiv().children) {
-            child.classList.remove("marked");
+        this.unmarkAll();
+    }
+}
+class GameManager {
+    constructor(board) {
+        this.board = board;
+        this.game = new Game(board, this);
+        this.score = 0;
+        this.timeRemaining = board.timeSeconds;
+        this.remainingWords = [0, 0, 0, 0, 0, 0, 0];
+        for (let word of board.words) {
+            let len = word.length;
+            if (len < 2)
+                continue;
+            if (len > 8)
+                len = 8;
+            this.remainingWords[len - 2] += 1;
+        }
+        // TODO: update UI
+        setInterval(this.tick, 1000);
+    }
+    tick() {
+        // TODO: update UI
+        this.timeRemaining -= 1;
+        if (this.timeRemaining <= 0) {
+            this.game.disable();
+        }
+    }
+    partialWord(word) {
+        // TODO: update UI
+    }
+    finalWord(word) {
+        // TODO: update UI
+        if (this.board.words.indexOf(word) >= 0) {
+            this.score += Board.getWordScore(word);
+            let len = word.length;
+            if (len > 8)
+                len = 8;
+            if (len >= 2) {
+                this.remainingWords[len - 2] -= 1;
+            }
         }
     }
 }
