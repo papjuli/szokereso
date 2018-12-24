@@ -28,7 +28,8 @@ function signedIn(googleUser) {
   document.getElementById("whoami").innerHTML = profile.getEmail() + " " + profile.getName();
   document.getElementById("signin-button").style.display = "none";
   document.getElementById("signout-button").style.display = "inline";
-  loadBoardList(profile);
+  // loadBoardList(profile);
+  loadLatestBoard(profile);
 }
 
 function signedOut() {
@@ -40,7 +41,7 @@ function signedOut() {
   document.getElementById("solvedByMe").innerHTML = "";
 }
 
-function myProfile() {
+function getUserProfile() {
   return gapi.auth2.getAuthInstance().currentUser.get().getBasicProfile();
 }
 
@@ -55,9 +56,21 @@ function handleSignOutClick(event) {
   auth2.signOut().then(signedOut);
 }
 
+function loadLatestBoard(profile) {
+  if (!profile) {
+    profile = getUserProfile();
+  }
+  gapi.client.sheets.spreadsheets.values.get({
+    spreadsheetId: '1u9w_rAWrPBUnmQ_G4TYvnIEDifVQg4HWKhbqvFET2Yk',
+    range: 'games!A1:Z9999',
+  }).then(function(result) {
+    console.log(result);
+  })
+}
+
 function loadBoardList(profile) {
   if (!profile) {
-    profile = myProfile();
+    profile = getUserProfile();
   }
   gapi.client.sheets.spreadsheets.values.get({
     spreadsheetId: '1u9w_rAWrPBUnmQ_G4TYvnIEDifVQg4HWKhbqvFET2Yk',
@@ -128,7 +141,7 @@ function getBoardResults() {
 function saveBoardResult() {
   unmarkAll();
   console.log("Saving...");
-  var profile = myProfile();
+  var profile = getUserProfile();
   console.log(profile);
 
   var range = "A" + szk.sheetRow + ":Z" + szk.sheetRow;
