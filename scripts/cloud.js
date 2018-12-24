@@ -68,6 +68,13 @@ function loadLatestBoard(profile) {
   })
 }
 
+function loadAllRows() {
+  return gapi.client.sheets.spreadsheets.values.get({
+    spreadsheetId: '1u9w_rAWrPBUnmQ_G4TYvnIEDifVQg4HWKhbqvFET2Yk',
+    range: 'A1:Z9999',
+  });
+}
+
 function loadBoardList(profile) {
   if (!profile) {
     profile = getUserProfile();
@@ -135,6 +142,26 @@ function getBoardResults() {
         list.appendChild(r);
       }
       document.getElementById("allWords").innerHTML = szk.boardData.words.join(", ");
+  });
+}
+
+function updateSheet(range, value) {
+  gapi.client.sheets.spreadsheets.values.update({
+    spreadsheetId: '1u9w_rAWrPBUnmQ_G4TYvnIEDifVQg4HWKhbqvFET2Yk',
+    range: range,
+    valueInputOption: "RAW",
+    resource: {
+      values: [
+        [value],
+      ],
+    }
+  }).then(function(err, result) {
+    if(err) {
+      // Handle error
+      console.log(err);
+    } else {
+      console.log('%d cells updated.', result.updatedCells);
+    }
   });
 }
 
