@@ -7,7 +7,7 @@ class GameManager {
     private timeRemaining: number;
     private timer;
 
-    constructor(private board: Board) {
+    constructor(private board: Board, private manager: GameStateManager) {
         this.game = new Game(board, this);
         this.ui = new GameUI();
         this.score = 0;
@@ -34,6 +34,7 @@ class GameManager {
         if (this.timeRemaining <= 0) {
             this.game.disable();
             clearInterval(this.timer);
+            this.manager.gameOver();
         }
     }
 

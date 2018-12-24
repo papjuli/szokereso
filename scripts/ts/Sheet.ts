@@ -5,6 +5,8 @@ class Sheet {
     private currentRow: SheetRow;
     private currentRowIndex: number;
 
+    constructor(private manager: GameStateManager) {}
+
     // Reloads the current row, even if new rows have been added after it.
     // This is useful when a game has ended and someone may have already created
     // a new game but we still want to read others' results from the correct row.
@@ -28,6 +30,7 @@ class Sheet {
             users.push(UserState.fromJson(row[j]));
         }
         this.currentRow = new SheetRow(board, users);
+        this.manager.notifyDataReady();
     }
 
     public currentBoard(): Board { return this.currentRow.getBoard(); }
@@ -50,5 +53,16 @@ class Sheet {
         // B123 and C123 contain the results of those players and we want to write to D123.
         let col = String.fromCharCode("A".charCodeAt(0) + values[rowIndex].length + 1);
         updateSheet(col + String(1 + rowIndex), user.asJson());
+    }
+
+    // Used when a new board is created.
+    public addNewBoard(board: Board): void {
+        loadAllRows((values) => this.appendNewBoard(board, values));
+    }
+
+    private appendNewBoard(board: Board, values: any): void {
+        this.currentRowIndex = values.length;
+        this.currentRow = new SheetRow(board, []);
+        updateSheet("A" + (1 + this.currentRowIndex), board.asJson());
     }
 }

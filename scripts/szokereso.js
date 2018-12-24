@@ -236,6 +236,9 @@ class BoardGenerator {
         }
     }
 }
+function myEmailAddress() {
+    return getUserProfile().getEmail();
+}
 class Game {
     constructor(board, manager) {
         this.board = board;
@@ -328,9 +331,11 @@ class Game {
     }
 }
 class GameManager {
-    constructor(board) {
+    constructor(board, manager) {
         this.board = board;
+        this.manager = manager;
         this.game = new Game(board, this);
+        this.ui = new GameUI();
         this.score = 0;
         this.timeRemaining = board.timeSeconds;
         this.remainingWords = [0, 0, 0, 0, 0, 0, 0];
@@ -342,20 +347,26 @@ class GameManager {
                 len = 8;
             this.remainingWords[len - 2] += 1;
         }
-        // TODO: update UI
-        setInterval(this.tick, 1000);
+        this.ui.setScore(this.score);
+        this.ui.setCurrentGuess("");
+        this.ui.setTimeRemaining(this.timeRemaining);
+        this.ui.setWordRemaining(this.remainingWords);
+        this.timer = setInterval(this.tick, 1000);
     }
     tick() {
-        // TODO: update UI
         this.timeRemaining -= 1;
+        this.ui.setTimeRemaining(this.timeRemaining);
         if (this.timeRemaining <= 0) {
             this.game.disable();
+            clearInterval(this.timer);
+            this.manager.gameOver();
         }
     }
     partialWord(word) {
-        // TODO: update UI
+        this.ui.setCurrentGuess(word);
     }
     finalWord(word) {
+        this.ui.setCurrentGuess("");
         // TODO: update UI
         if (this.board.words.indexOf(word) >= 0) {
             this.score += Board.getWordScore(word);
@@ -365,8 +376,175 @@ class GameManager {
             if (len >= 2) {
                 this.remainingWords[len - 2] -= 1;
             }
+            this.ui.setScore(this.score);
+            this.ui.setWordRemaining(this.remainingWords);
+            this.ui.addFoundWord(word);
         }
     }
+}
+var GameState;
+(function (GameState) {
+    // The start page shows when Szokereso is launching and we're still fetching
+    // data from the sheet for the first time. On the start page the user can
+    // click a button to 
+    GameState[GameState["START_PAGE"] = 0] = "START_PAGE";
+    // When the current row does not contain results from us, we can start playing.
+    GameState[GameState["READY_TO_PLAY"] = 1] = "READY_TO_PLAY";
+    // When we play, the current row still does not contain a result from us.
+    // When we finish playing, either by clicking 'give up' or when the time
+    // runs out, we store our result to the sheet and switch to finished playing.
+    GameState[GameState["PLAYING"] = 2] = "PLAYING";
+    // When we are done playing, we show everybody's results for the current row.
+    // The user can click a reload button to fetch new results and remain in this state
+    // or click a 'new' button to go to 'ready to play' and either join a new current
+    // or create a new one. (Or something like this, this last part is not fully
+    // clear to me).
+    GameState[GameState["FINISHED_PLAYING"] = 3] = "FINISHED_PLAYING";
+})(GameState || (GameState = {}));
+class GameStateManager {
+    constructor() {
+        // TODO: use real vocabulary
+        this.boardGenerator = new BoardGenerator(["HELLO"]);
+        this.sheet = new Sheet(this);
+        this.sheet.loadLastRow();
+        this.showStartPage();
+    }
+    // The sheet will notify us when data loading is ready through this function.
+    // This allows us to render the appropriate ui elements on the current page.
+    // This is particularly important for the start page, where we don't yet have
+    // any row loaded when the start page is displayed.
+    notifyDataReady() {
+        if (this.sheet.didIPlayOnCurrentBoard()) {
+            this.showLastGameResultsButton();
+        }
+        else {
+            this.showJoinLastGameButton();
+        }
+    }
+    // This should be the event listener of the create game button.
+    createGamePressed(event) {
+        let board = this.boardGenerator.generateBoard(3, 300, 30);
+        this.sheet.addNewBoard(board);
+        this.showReadyToPlay();
+    }
+    showStartPage() {
+        this.state = GameState.START_PAGE;
+        // TODO change ui
+    }
+    showLastGameResultsButton() {
+        // TODO
+    }
+    showJoinLastGameButton() {
+        // TODO
+    }
+    showReadyToPlay() {
+        this.state = GameState.READY_TO_PLAY;
+        // TODO change ui
+        // 
+        // Do this, with the correct id, to install the correct event listener.
+        // document.getElementById("startGameButton").addEventListener("onclick", this.startGamePressed);
+    }
+    // This should be the event lsitener of the start game button on the ready to play page.
+    startGamePressed(event) {
+        this.state = GameState.PLAYING;
+        this.gameManager = new GameManager(this.sheet.currentBoard(), this);
+        // TODO change ui
+    }
+    // Called by the game manager, when the game ends (either by out of time or by clicking
+    // the 'give up' button).
+    gameOver() {
+        this.state = GameState.FINISHED_PLAYING;
+        // TODO change ui
+    }
+}
+class GameUI {
+    constructor() { this.foundWords = new Array(); }
+    setTimeRemaining(seconds) {
+        document.getElementById("timeLeft").innerHTML =
+            String(Math.floor(seconds / 60) + ":" + ("00" + seconds % 60).slice(-2));
+    }
+    setCurrentGuess(word) {
+        document.getElementById("currentWord").innerHTML = word;
+    }
+    setScore(score) {
+        document.getElementById("score").innerHTML = String(score);
+    }
+    setWordRemaining(wordCounts) {
+        for (let i = 2; i < 9; ++i) {
+            document.getElementById("remaining-" + i + (i == 8 ? "+" : "")).innerHTML =
+                String(wordCounts[i - 2]);
+        }
+    }
+    addFoundWord(word) {
+        this.foundWords.push(word);
+        this.foundWords.sort();
+        document.getElementById("found").innerHTML = this.foundWords.join(" ");
+    }
+}
+class Sheet {
+    constructor(manager) {
+        this.manager = manager;
+    }
+    // Reloads the current row, even if new rows have been added after it.
+    // This is useful when a game has ended and someone may have already created
+    // a new game but we still want to read others' results from the correct row.
+    reloadCurrentRow() {
+        loadAllRows((values) => this.receiveData(this.currentRowIndex, values));
+    }
+    // Loads the last row, this is useful when we're done looking at others' results
+    // and are ready to play the latest new game.
+    loadLastRow() {
+        loadAllRows((values) => this.receiveData(-1, values));
+    }
+    receiveData(rowIndex, values) {
+        this.currentRowIndex = rowIndex == -1 ? values.length() - 1 : rowIndex;
+        let row = values[rowIndex];
+        if (row.length == 0)
+            return;
+        let board = Board.fromJson(row[0]);
+        let users = new Array();
+        for (let j = 1; j < row.length; ++j) {
+            users.push(UserState.fromJson(row[j]));
+        }
+        this.currentRow = new SheetRow(board, users);
+        this.manager.notifyDataReady();
+    }
+    currentBoard() { return this.currentRow.getBoard(); }
+    didIPlayOnCurrentBoard() {
+        for (let user of this.currentRow.getUsers()) {
+            if (user.email == myEmailAddress())
+                return true;
+        }
+        return false;
+    }
+    // Used when I am ready playing a board and want to store my results to the sheet.
+    addUserStateToCurrentBoard(user) {
+        loadAllRows((values) => this.appendUserState(this.currentRowIndex, user, values));
+    }
+    appendUserState(rowIndex, user, values) {
+        // The column to store into is the one one after the last column set, so eg. if two
+        // players have already stored their results, then A123 contains the board, 
+        // B123 and C123 contain the results of those players and we want to write to D123.
+        let col = String.fromCharCode("A".charCodeAt(0) + values[rowIndex].length + 1);
+        updateSheet(col + String(1 + rowIndex), user.asJson());
+    }
+    // Used when a new board is created.
+    addNewBoard(board) {
+        loadAllRows((values) => this.appendNewBoard(board, values));
+    }
+    appendNewBoard(board, values) {
+        this.currentRowIndex = values.length;
+        this.currentRow = new SheetRow(board, []);
+        updateSheet("A" + (1 + this.currentRowIndex), board.asJson());
+    }
+}
+class SheetRow {
+    constructor(board, users) {
+        this.board = board;
+        this.users = users;
+    }
+    getBoard() { return this.board; }
+    getUsers() { return this.users; }
 }
 class UserState {
     constructor(name, email) {
