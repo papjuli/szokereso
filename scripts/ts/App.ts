@@ -1,4 +1,4 @@
-enum GameState {
+enum AppState {
     // The start page shows when Szokereso is launching and we're still fetching
     // data from the sheet for the first time. On the start page the user can
     // click a button to 
@@ -20,16 +20,17 @@ enum GameState {
     FINISHED_PLAYING
 }
 
-class GameStateManager {
+class App {
     private sheet: Sheet;
 
-    private state: GameState;
+    private state: AppState;
 
     private boardGenerator: BoardGenerator;
 
     private gameManager: GameManager;
 
     constructor() {
+        // TODO: add event listeners here
         // TODO: use real vocabulary
         this.boardGenerator = new BoardGenerator(["HELLO"]);
         this.sheet = new Sheet(this);
@@ -57,7 +58,7 @@ class GameStateManager {
     }
 
     private showStartPage(): void {
-        this.state = GameState.START_PAGE;
+        this.state = AppState.START_PAGE;
         // TODO change ui
     }
 
@@ -70,7 +71,7 @@ class GameStateManager {
     }
 
     private showReadyToPlay(): void {
-        this.state = GameState.READY_TO_PLAY;
+        this.state = AppState.READY_TO_PLAY;
         // TODO change ui
         // 
         // Do this, with the correct id, to install the correct event listener.
@@ -79,7 +80,7 @@ class GameStateManager {
 
     // This should be the event lsitener of the start game button on the ready to play page.
     public startGamePressed(event: Event): void {
-        this.state = GameState.PLAYING;
+        this.state = AppState.PLAYING;
         this.gameManager = new GameManager(this.sheet.currentBoard(), this);
         // TODO change ui
     }
@@ -87,7 +88,7 @@ class GameStateManager {
     // Called by the game manager, when the game ends (either by out of time or by clicking
     // the 'give up' button).
     public gameOver(): void {
-        this.state = GameState.FINISHED_PLAYING;
+        this.state = AppState.FINISHED_PLAYING;
         // TODO change ui
     }
 }

@@ -1,3 +1,4 @@
+// nem kell
 
 var szk = {
   foundWords: [],

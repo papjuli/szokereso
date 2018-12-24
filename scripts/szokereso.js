@@ -1,3 +1,79 @@
+var AppState;
+(function (AppState) {
+    // The start page shows when Szokereso is launching and we're still fetching
+    // data from the sheet for the first time. On the start page the user can
+    // click a button to 
+    AppState[AppState["START_PAGE"] = 0] = "START_PAGE";
+    // When the current row does not contain results from us, we can start playing.
+    AppState[AppState["READY_TO_PLAY"] = 1] = "READY_TO_PLAY";
+    // When we play, the current row still does not contain a result from us.
+    // When we finish playing, either by clicking 'give up' or when the time
+    // runs out, we store our result to the sheet and switch to finished playing.
+    AppState[AppState["PLAYING"] = 2] = "PLAYING";
+    // When we are done playing, we show everybody's results for the current row.
+    // The user can click a reload button to fetch new results and remain in this state
+    // or click a 'new' button to go to 'ready to play' and either join a new current
+    // or create a new one. (Or something like this, this last part is not fully
+    // clear to me).
+    AppState[AppState["FINISHED_PLAYING"] = 3] = "FINISHED_PLAYING";
+})(AppState || (AppState = {}));
+class App {
+    constructor() {
+        // TODO: add event listeners here
+        // TODO: use real vocabulary
+        this.boardGenerator = new BoardGenerator(["HELLO"]);
+        this.sheet = new Sheet(this);
+        this.sheet.loadLastRow();
+        this.showStartPage();
+    }
+    // The sheet will notify us when data loading is ready through this function.
+    // This allows us to render the appropriate ui elements on the current page.
+    // This is particularly important for the start page, where we don't yet have
+    // any row loaded when the start page is displayed.
+    notifyDataReady() {
+        if (this.sheet.didIPlayOnCurrentBoard()) {
+            this.showLastGameResultsButton();
+        }
+        else {
+            this.showJoinLastGameButton();
+        }
+    }
+    // This should be the event listener of the create game button.
+    createGamePressed(event) {
+        let board = this.boardGenerator.generateBoard(3, 300, 30);
+        this.sheet.addNewBoard(board);
+        this.showReadyToPlay();
+    }
+    showStartPage() {
+        this.state = AppState.START_PAGE;
+        // TODO change ui
+    }
+    showLastGameResultsButton() {
+        // TODO
+    }
+    showJoinLastGameButton() {
+        // TODO
+    }
+    showReadyToPlay() {
+        this.state = AppState.READY_TO_PLAY;
+        // TODO change ui
+        // 
+        // Do this, with the correct id, to install the correct event listener.
+        // document.getElementById("startGameButton").addEventListener("onclick", this.startGamePressed);
+    }
+    // This should be the event lsitener of the start game button on the ready to play page.
+    startGamePressed(event) {
+        this.state = AppState.PLAYING;
+        this.gameManager = new GameManager(this.sheet.currentBoard(), this);
+        // TODO change ui
+    }
+    // Called by the game manager, when the game ends (either by out of time or by clicking
+    // the 'give up' button).
+    gameOver() {
+        this.state = AppState.FINISHED_PLAYING;
+        // TODO change ui
+    }
+}
 class Board {
     constructor(size, timeSeconds) {
         this.size = size;
@@ -331,9 +407,9 @@ class Game {
     }
 }
 class GameManager {
-    constructor(board, manager) {
+    constructor(board, app) {
         this.board = board;
-        this.manager = manager;
+        this.app = app;
         this.game = new Game(board, this);
         this.ui = new GameUI();
         this.score = 0;
@@ -359,7 +435,7 @@ class GameManager {
         if (this.timeRemaining <= 0) {
             this.game.disable();
             clearInterval(this.timer);
-            this.manager.gameOver();
+            this.app.gameOver();
         }
     }
     partialWord(word) {
@@ -380,81 +456,6 @@ class GameManager {
             this.ui.setWordRemaining(this.remainingWords);
             this.ui.addFoundWord(word);
         }
-    }
-}
-var GameState;
-(function (GameState) {
-    // The start page shows when Szokereso is launching and we're still fetching
-    // data from the sheet for the first time. On the start page the user can
-    // click a button to 
-    GameState[GameState["START_PAGE"] = 0] = "START_PAGE";
-    // When the current row does not contain results from us, we can start playing.
-    GameState[GameState["READY_TO_PLAY"] = 1] = "READY_TO_PLAY";
-    // When we play, the current row still does not contain a result from us.
-    // When we finish playing, either by clicking 'give up' or when the time
-    // runs out, we store our result to the sheet and switch to finished playing.
-    GameState[GameState["PLAYING"] = 2] = "PLAYING";
-    // When we are done playing, we show everybody's results for the current row.
-    // The user can click a reload button to fetch new results and remain in this state
-    // or click a 'new' button to go to 'ready to play' and either join a new current
-    // or create a new one. (Or something like this, this last part is not fully
-    // clear to me).
-    GameState[GameState["FINISHED_PLAYING"] = 3] = "FINISHED_PLAYING";
-})(GameState || (GameState = {}));
-class GameStateManager {
-    constructor() {
-        // TODO: use real vocabulary
-        this.boardGenerator = new BoardGenerator(["HELLO"]);
-        this.sheet = new Sheet(this);
-        this.sheet.loadLastRow();
-        this.showStartPage();
-    }
-    // The sheet will notify us when data loading is ready through this function.
-    // This allows us to render the appropriate ui elements on the current page.
-    // This is particularly important for the start page, where we don't yet have
-    // any row loaded when the start page is displayed.
-    notifyDataReady() {
-        if (this.sheet.didIPlayOnCurrentBoard()) {
-            this.showLastGameResultsButton();
-        }
-        else {
-            this.showJoinLastGameButton();
-        }
-    }
-    // This should be the event listener of the create game button.
-    createGamePressed(event) {
-        let board = this.boardGenerator.generateBoard(3, 300, 30);
-        this.sheet.addNewBoard(board);
-        this.showReadyToPlay();
-    }
-    showStartPage() {
-        this.state = GameState.START_PAGE;
-        // TODO change ui
-    }
-    showLastGameResultsButton() {
-        // TODO
-    }
-    showJoinLastGameButton() {
-        // TODO
-    }
-    showReadyToPlay() {
-        this.state = GameState.READY_TO_PLAY;
-        // TODO change ui
-        // 
-        // Do this, with the correct id, to install the correct event listener.
-        // document.getElementById("startGameButton").addEventListener("onclick", this.startGamePressed);
-    }
-    // This should be the event lsitener of the start game button on the ready to play page.
-    startGamePressed(event) {
-        this.state = GameState.PLAYING;
-        this.gameManager = new GameManager(this.sheet.currentBoard(), this);
-        // TODO change ui
-    }
-    // Called by the game manager, when the game ends (either by out of time or by clicking
-    // the 'give up' button).
-    gameOver() {
-        this.state = GameState.FINISHED_PLAYING;
-        // TODO change ui
     }
 }
 class GameUI {
@@ -482,8 +483,8 @@ class GameUI {
     }
 }
 class Sheet {
-    constructor(manager) {
-        this.manager = manager;
+    constructor(app) {
+        this.app = app;
     }
     // Reloads the current row, even if new rows have been added after it.
     // This is useful when a game has ended and someone may have already created
@@ -507,7 +508,7 @@ class Sheet {
             users.push(UserState.fromJson(row[j]));
         }
         this.currentRow = new SheetRow(board, users);
-        this.manager.notifyDataReady();
+        this.app.notifyDataReady();
     }
     currentBoard() { return this.currentRow.getBoard(); }
     didIPlayOnCurrentBoard() {

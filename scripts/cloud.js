@@ -56,6 +56,7 @@ function handleSignOutClick(event) {
   auth2.signOut().then(signedOut);
 }
 
+// nem kell
 function loadLatestBoard(profile) {
   if (!profile) {
     profile = getUserProfile();
@@ -68,6 +69,7 @@ function loadLatestBoard(profile) {
   })
 }
 
+// kell
 function loadAllRows() {
   return gapi.client.sheets.spreadsheets.values.get({
     spreadsheetId: '1u9w_rAWrPBUnmQ_G4TYvnIEDifVQg4HWKhbqvFET2Yk',
@@ -75,6 +77,7 @@ function loadAllRows() {
   });
 }
 
+// nem kell
 function loadBoardList(profile) {
   if (!profile) {
     profile = getUserProfile();
@@ -126,6 +129,7 @@ function loadBoardList(profile) {
   });
 }
 
+// nem kell
 function getBoardResults() {
   var range = "A" + szk.sheetRow + ":Z" + szk.sheetRow;
   gapi.client.sheets.spreadsheets.values.get({
@@ -145,6 +149,7 @@ function getBoardResults() {
   });
 }
 
+// kell
 function updateSheet(range, value) {
   gapi.client.sheets.spreadsheets.values.update({
     spreadsheetId: '1u9w_rAWrPBUnmQ_G4TYvnIEDifVQg4HWKhbqvFET2Yk',
@@ -165,6 +170,7 @@ function updateSheet(range, value) {
   });
 }
 
+// nem kell
 function saveBoardResult() {
   unmarkAll();
   console.log("Saving...");

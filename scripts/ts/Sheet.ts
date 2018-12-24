@@ -5,7 +5,7 @@ class Sheet {
     private currentRow: SheetRow;
     private currentRowIndex: number;
 
-    constructor(private manager: GameStateManager) {}
+    constructor(private app: App) {}
 
     // Reloads the current row, even if new rows have been added after it.
     // This is useful when a game has ended and someone may have already created
@@ -30,7 +30,7 @@ class Sheet {
             users.push(UserState.fromJson(row[j]));
         }
         this.currentRow = new SheetRow(board, users);
-        this.manager.notifyDataReady();
+        this.app.notifyDataReady();
     }
 
     public currentBoard(): Board { return this.currentRow.getBoard(); }
