@@ -18,13 +18,14 @@ var AppState;
     AppState[AppState["FINISHED_PLAYING"] = 3] = "FINISHED_PLAYING";
 })(AppState || (AppState = {}));
 class App {
-    constructor() {
+    constructor(vocabulary) {
         // TODO: add event listeners here
         // TODO: use real vocabulary
-        this.boardGenerator = new BoardGenerator(["HELLO"]);
+        this.boardGenerator = new BoardGenerator(vocabulary);
         this.sheet = new Sheet(this);
         this.sheet.loadLastRow();
         this.showStartPage();
+        console.log("App created");
     }
     // The sheet will notify us when data loading is ready through this function.
     // This allows us to render the appropriate ui elements on the current page.

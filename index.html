@@ -6,8 +6,9 @@
   <link rel="shortcut icon" href="images/favicon.ico"/>
   <link rel="stylesheet" href="style.css">
   <link rel="manifest" href="manifest.webmanifest">
-  <script type="text/javascript" src="scripts/game.js"></script>
+  <script type="text/javascript" src="scripts/szokereso.js"></script>
   <script type="text/javascript" src="scripts/cloud.js"></script>
+  <script type="text/javascript" src="scripts/vocab/hungarian_vocabulary.js"></script>
 
   <script async defer src="https://apis.google.com/js/api.js"
           onload="this.onload=function(){}; handleClientLoad();"
@@ -18,7 +19,7 @@
 <body>
 
 <script>
-  document.body.addEventListener('touchmove', bodyTouchMove, {passive: false});
+  // document.body.addEventListener('touchmove', bodyTouchMove, {passive: false});
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('service-worker.js').then(function(registration) {
       console.log('Service worker registration succeeded:', registration);

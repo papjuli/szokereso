@@ -29,13 +29,14 @@ class App {
 
     private gameManager: GameManager;
 
-    constructor() {
+    constructor(vocabulary) {
         // TODO: add event listeners here
         // TODO: use real vocabulary
-        this.boardGenerator = new BoardGenerator(["HELLO"]);
+        this.boardGenerator = new BoardGenerator(vocabulary);
         this.sheet = new Sheet(this);
         this.sheet.loadLastRow();
         this.showStartPage();
+        console.log("App created");
     }
 
     // The sheet will notify us when data loading is ready through this function.

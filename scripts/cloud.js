@@ -29,6 +29,7 @@ function signedIn(googleUser) {
   document.getElementById("signin-button").style.display = "none";
   document.getElementById("signout-button").style.display = "inline";
   // loadBoardList(profile);
+  app = new App(hungarian_vocabulary.words);
   loadLatestBoard(profile);
 }
 

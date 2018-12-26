@@ -1,4 +1,4 @@
-define({
+hungarian_vocabulary = {
   words: [
 "ad",
 "ah",
@@ -105285,4 +105285,4 @@ define({
 "zsidócseresznye",
 "zsoldoshadsereg"
 ]
-})
+}
