@@ -46,8 +46,13 @@
 
   <p>
     Latest game:
-    <div id="latestGame"></div>
+    <div id="lastGameIndex"></div>
+    <div id="lastGameResults"></div>
   </p>
+
+  <div>
+    <button id="createGameButton">New game</button>
+  </div>
 
   <!-- 
   <div id="boardList">
@@ -69,7 +74,11 @@
   -->
 </div>
 
-<div id="game">
+<div id="readyToPlay" style="display:none">
+  <button id="startGameButton">Start</button>
+</div>
+
+<div id="game" style="display:none">
   <div id="timer">
     <p>Time left: <span id="timeLeft"></span> </p>
   </div>
@@ -95,12 +104,12 @@
 
     <div id="score">0</div>
     
-    <button id="saveButton" onclick="stopTimer()">Save</button>
+    <button id="saveButton" onclick="stopTimer()">Stop</button>
   </div>
   
   <div id="results">
     <div id="endOfGameButtons">
-      <button id="menuButton" onclick="toMenu()">Back to menu</button>
+      <button id="menuButton">Back to menu</button>
       <button id="refreshResults" onclick="getBoardResults()">Refresh results</button>
     </div>
     
@@ -109,6 +118,7 @@
     <div>All words: <div id="allWords"></div><br>
       Total score: <div id="totalScore"></div>
     </div>
+
   </div>
 </div>
 

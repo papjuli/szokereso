@@ -36,6 +36,10 @@ class App {
         this.sheet = new Sheet(this);
         this.sheet.loadLastRow();
         this.showStartPage();
+
+        document.getElementById("startGameButton").addEventListener("onclick", this.startGamePressed);
+        document.getElementById("createGameButton").addEventListener("onclick", this.createGamePressed);
+
         console.log("App created");
     }
 
@@ -44,8 +48,10 @@ class App {
     // This is particularly important for the start page, where we don't yet have
     // any row loaded when the start page is displayed.
     public notifyDataReady(): void {
+        console.log("notifyDataReady");
+        document.getElementById("lastGameIndex").innerHTML = String(this.sheet.getCurrentRowIndex());
         if (this.sheet.didIPlayOnCurrentBoard()) {
-            this.showLastGameResultsButton();
+            this.showLastGameResults();
         } else {
             this.showJoinLastGameButton();
         }
@@ -61,10 +67,15 @@ class App {
     private showStartPage(): void {
         this.state = AppState.START_PAGE;
         // TODO change ui
+        document.getElementById("menu").style.display = "block";
+        document.getElementById("readyToPlay").style.display = "none";
+        document.getElementById("results").style.display = "none";
+        document.getElementById("game").style.display = "none";
     }
 
-    private showLastGameResultsButton(): void {
+    private showLastGameResults(): void {
         // TODO
+        document.getElementById("lastGameResults").innerHTML = String(this.sheet.getCurrentGamesPlayers());
     }
 
     private showJoinLastGameButton(): void {
@@ -73,10 +84,8 @@ class App {
 
     private showReadyToPlay(): void {
         this.state = AppState.READY_TO_PLAY;
-        // TODO change ui
-        // 
-        // Do this, with the correct id, to install the correct event listener.
-        // document.getElementById("startGameButton").addEventListener("onclick", this.startGamePressed);
+        document.getElementById("readyToPlay").style.display = "none";
+        document.getElementById("menu").style.display = "block";
     }
 
     // This should be the event lsitener of the start game button on the ready to play page.
@@ -84,6 +93,11 @@ class App {
         this.state = AppState.PLAYING;
         this.gameManager = new GameManager(this.sheet.currentBoard(), this);
         // TODO change ui
+        document.getElementById("board").className = ""; // kell?
+        document.getElementById("readyToPlay").style.display = "none";
+        document.getElementById("menu").style.display = "none";
+        document.getElementById("results").style.display = "none";
+        document.getElementById("game").style.display = "block";
     }
 
     // Called by the game manager, when the game ends (either by out of time or by clicking
@@ -91,5 +105,9 @@ class App {
     public gameOver(): void {
         this.state = AppState.FINISHED_PLAYING;
         // TODO change ui
+        document.getElementById("board").className += " unplayable"; // kell?
+        document.getElementById("gameplay").style.display = "none";
+        document.getElementById("timer").style.display = "none";
+        document.getElementById("results").style.display = "inline";
     }
 }

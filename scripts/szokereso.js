@@ -25,6 +25,8 @@ class App {
         this.sheet = new Sheet(this);
         this.sheet.loadLastRow();
         this.showStartPage();
+        document.getElementById("startGameButton").addEventListener("onclick", this.startGamePressed);
+        document.getElementById("createGameButton").addEventListener("onclick", this.createGamePressed);
         console.log("App created");
     }
     // The sheet will notify us when data loading is ready through this function.
@@ -32,8 +34,10 @@ class App {
     // This is particularly important for the start page, where we don't yet have
     // any row loaded when the start page is displayed.
     notifyDataReady() {
+        console.log("notifyDataReady");
+        document.getElementById("lastGameIndex").innerHTML = String(this.sheet.getCurrentRowIndex());
         if (this.sheet.didIPlayOnCurrentBoard()) {
-            this.showLastGameResultsButton();
+            this.showLastGameResults();
         }
         else {
             this.showJoinLastGameButton();
@@ -48,31 +52,43 @@ class App {
     showStartPage() {
         this.state = AppState.START_PAGE;
         // TODO change ui
+        document.getElementById("menu").style.display = "block";
+        document.getElementById("readyToPlay").style.display = "none";
+        document.getElementById("results").style.display = "none";
+        document.getElementById("game").style.display = "none";
     }
-    showLastGameResultsButton() {
+    showLastGameResults() {
         // TODO
+        document.getElementById("lastGameResults").innerHTML = String(this.sheet.getCurrentGamesPlayers());
     }
     showJoinLastGameButton() {
         // TODO
     }
     showReadyToPlay() {
         this.state = AppState.READY_TO_PLAY;
-        // TODO change ui
-        // 
-        // Do this, with the correct id, to install the correct event listener.
-        // document.getElementById("startGameButton").addEventListener("onclick", this.startGamePressed);
+        document.getElementById("readyToPlay").style.display = "none";
+        document.getElementById("menu").style.display = "block";
     }
     // This should be the event lsitener of the start game button on the ready to play page.
     startGamePressed(event) {
         this.state = AppState.PLAYING;
         this.gameManager = new GameManager(this.sheet.currentBoard(), this);
         // TODO change ui
+        document.getElementById("board").className = ""; // kell?
+        document.getElementById("readyToPlay").style.display = "none";
+        document.getElementById("menu").style.display = "none";
+        document.getElementById("results").style.display = "none";
+        document.getElementById("game").style.display = "block";
     }
     // Called by the game manager, when the game ends (either by out of time or by clicking
     // the 'give up' button).
     gameOver() {
         this.state = AppState.FINISHED_PLAYING;
         // TODO change ui
+        document.getElementById("board").className += " unplayable"; // kell?
+        document.getElementById("gameplay").style.display = "none";
+        document.getElementById("timer").style.display = "none";
+        document.getElementById("results").style.display = "inline";
     }
 }
 class Board {
@@ -491,16 +507,17 @@ class Sheet {
     // This is useful when a game has ended and someone may have already created
     // a new game but we still want to read others' results from the correct row.
     reloadCurrentRow() {
-        loadAllRows((values) => this.receiveData(this.currentRowIndex, values));
+        loadAllRows().then((response) => this.receiveData(this.currentRowIndex, response));
     }
     // Loads the last row, this is useful when we're done looking at others' results
     // and are ready to play the latest new game.
     loadLastRow() {
-        loadAllRows((values) => this.receiveData(-1, values));
+        loadAllRows().then((response) => this.receiveData(-1, response));
     }
-    receiveData(rowIndex, values) {
-        this.currentRowIndex = rowIndex == -1 ? values.length() - 1 : rowIndex;
-        let row = values[rowIndex];
+    receiveData(rowIndex, response) {
+        var values = response.result.values;
+        this.currentRowIndex = rowIndex == -1 ? values.length - 1 : rowIndex;
+        let row = values[this.currentRowIndex];
         if (row.length == 0)
             return;
         let board = Board.fromJson(row[0]);
@@ -512,6 +529,8 @@ class Sheet {
         this.app.notifyDataReady();
     }
     currentBoard() { return this.currentRow.getBoard(); }
+    getCurrentRowIndex() { return this.currentRowIndex; }
+    getCurrentGamesPlayers() { return this.currentRow.getUsers(); }
     didIPlayOnCurrentBoard() {
         for (let user of this.currentRow.getUsers()) {
             if (user.email == myEmailAddress())
@@ -521,7 +540,7 @@ class Sheet {
     }
     // Used when I am ready playing a board and want to store my results to the sheet.
     addUserStateToCurrentBoard(user) {
-        loadAllRows((values) => this.appendUserState(this.currentRowIndex, user, values));
+        loadAllRows().then((response) => this.appendUserState(this.currentRowIndex, user, response));
     }
     appendUserState(rowIndex, user, values) {
         // The column to store into is the one one after the last column set, so eg. if two
@@ -532,7 +551,7 @@ class Sheet {
     }
     // Used when a new board is created.
     addNewBoard(board) {
-        loadAllRows((values) => this.appendNewBoard(board, values));
+        loadAllRows().then((response) => this.appendNewBoard(board, response));
     }
     appendNewBoard(board, values) {
         this.currentRowIndex = values.length;

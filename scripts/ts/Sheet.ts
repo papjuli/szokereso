@@ -1,4 +1,4 @@
-declare function loadAllRows(callback: any): any;
+declare function loadAllRows(): any;
 declare function updateSheet(range: string, value: string): void;
 
 class Sheet {
@@ -11,18 +11,19 @@ class Sheet {
     // This is useful when a game has ended and someone may have already created
     // a new game but we still want to read others' results from the correct row.
     public reloadCurrentRow(): void {
-        loadAllRows((values) => this.receiveData(this.currentRowIndex, values));
+        loadAllRows().then((response) => this.receiveData(this.currentRowIndex, response));
     }
 
     // Loads the last row, this is useful when we're done looking at others' results
     // and are ready to play the latest new game.
     public loadLastRow(): void {
-        loadAllRows((values) => this.receiveData(-1, values));
+        loadAllRows().then((response) => this.receiveData(-1, response));
     }
 
-    private receiveData(rowIndex: number, values: any): void {
-        this.currentRowIndex = rowIndex == -1 ? values.length() - 1 : rowIndex;
-        let row = values[rowIndex];
+    private receiveData(rowIndex: number, response: any): void {
+        var values = response.result.values;
+        this.currentRowIndex = rowIndex == -1 ? values.length - 1 : rowIndex;
+        let row = values[this.currentRowIndex];
         if (row.length == 0) return;
         let board = Board.fromJson(row[0]);
         let users = new Array<UserState>();
@@ -35,6 +36,10 @@ class Sheet {
 
     public currentBoard(): Board { return this.currentRow.getBoard(); }
 
+    public getCurrentRowIndex(): number { return this.currentRowIndex; }
+
+    public getCurrentGamesPlayers(): UserState[] { return this.currentRow.getUsers(); }
+
     public didIPlayOnCurrentBoard(): boolean {
         for (let user of this.currentRow.getUsers()) {
             if (user.email == myEmailAddress()) return true;
@@ -44,7 +49,8 @@ class Sheet {
 
     // Used when I am ready playing a board and want to store my results to the sheet.
     public addUserStateToCurrentBoard(user: UserState): void {
-        loadAllRows((values) => this.appendUserState(this.currentRowIndex, user, values));
+        loadAllRows().then((response) => this.appendUserState(
+            this.currentRowIndex, user, response));
     }
 
     private appendUserState(rowIndex: number, user: UserState, values: any): void {
@@ -57,7 +63,8 @@ class Sheet {
 
     // Used when a new board is created.
     public addNewBoard(board: Board): void {
-        loadAllRows((values) => this.appendNewBoard(board, values));
+        loadAllRows().then((response) => this.appendNewBoard(
+            board, response));
     }
 
     private appendNewBoard(board: Board, values: any): void {

@@ -72,10 +72,11 @@ function loadLatestBoard(profile) {
 
 // kell
 function loadAllRows() {
+  console.log("loadAllRows");
   return gapi.client.sheets.spreadsheets.values.get({
     spreadsheetId: '1u9w_rAWrPBUnmQ_G4TYvnIEDifVQg4HWKhbqvFET2Yk',
-    range: 'A1:Z9999',
-  });
+    range: 'games!A1:Z9999',
+  });  // return a Promise
 }
 
 // nem kell
