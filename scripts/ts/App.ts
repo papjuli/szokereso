@@ -37,12 +37,14 @@ class App {
         this.sheet.loadLastRow();
         this.showStartPage();
 
-        document.getElementById("createGameButton")
-            .addEventListener("click", (event) => this.createGamePressed(this, event));
-        document.getElementById("startGameButton")
-            .addEventListener("click", (event) => this.startGamePressed(this, event));
-        document.getElementById("playLastGameButton")
-            .addEventListener<"click">("click", (event) => this.startGamePressed(this, event));
+        document.getElementById("createGameButton").addEventListener(
+            "click", (event) => this.createGamePressed(this, event));
+        document.getElementById("startGameButton").addEventListener(
+            "click", (event) => this.startGamePressed(this, event));
+        document.getElementById("playLastGameButton").addEventListener(
+            "click", (event) => this.startGamePressed(this, event));
+        document.getElementById("menuButton").addEventListener(
+            "click", (event) => this.backToMenuPressed(this, event));
 
         console.log("App created");
     }
@@ -56,10 +58,8 @@ class App {
         document.getElementById("lastGameIndex").innerHTML = String(this.sheet.getCurrentRowIndex());
         if (this.sheet.didIPlayOnCurrentBoard()) {
             this.showLastGameResults();
-            console.log("didIPlayOnCurrentBoard is true");
         } else {
             this.showJoinLastGameButton();
-            console.log("didIPlayOnCurrentBoard is false");
         }
     }
 
@@ -122,5 +122,15 @@ class App {
         document.getElementById("gameplay").style.display = "none";
         document.getElementById("timer").style.display = "none";
         document.getElementById("results").style.display = "inline";
+    }
+
+    public backToMenuPressed(self: App, event: Event): void {
+        console.log("App.backPressed");
+        self.state = AppState.START_PAGE;
+        self.gameManager = null;
+        document.getElementById("readyToPlay").style.display = "none";
+        document.getElementById("menu").style.display = "block";
+        document.getElementById("results").style.display = "none";
+        document.getElementById("game").style.display = "none";
     }
 }
