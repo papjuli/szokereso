@@ -25,8 +25,9 @@ class App {
         this.sheet = new Sheet(this);
         this.sheet.loadLastRow();
         this.showStartPage();
-        document.getElementById("startGameButton").addEventListener("onclick", this.startGamePressed);
         document.getElementById("createGameButton").addEventListener("onclick", this.createGamePressed);
+        document.getElementById("startGameButton").addEventListener("onclick", this.startGamePressed);
+        document.getElementById("playLastGameButton").addEventListener("onclick", this.startGamePressed);
         console.log("App created");
     }
     // The sheet will notify us when data loading is ready through this function.
@@ -38,13 +39,16 @@ class App {
         document.getElementById("lastGameIndex").innerHTML = String(this.sheet.getCurrentRowIndex());
         if (this.sheet.didIPlayOnCurrentBoard()) {
             this.showLastGameResults();
+            console.log("didIPlayOnCurrentBoard is true");
         }
         else {
             this.showJoinLastGameButton();
+            console.log("didIPlayOnCurrentBoard is false");
         }
     }
     // This should be the event listener of the create game button.
     createGamePressed(event) {
+        console.log("App.createGamePressed");
         let board = this.boardGenerator.generateBoard(3, 300, 30);
         this.sheet.addNewBoard(board);
         this.showReadyToPlay();
@@ -59,21 +63,27 @@ class App {
     }
     showLastGameResults() {
         // TODO
+        document.getElementById("playLastGameButton").style.display = "none";
+        document.getElementById("lastGameResults").style.display = "block";
         document.getElementById("lastGameResults").innerHTML = String(this.sheet.getCurrentGamesPlayers());
     }
     showJoinLastGameButton() {
         // TODO
+        console.log("showJoinLastGameButton");
+        document.getElementById("playLastGameButton").style.display = "block";
+        document.getElementById("lastGameResults").style.display = "none";
+        document.getElementById("lastGameResults").innerHTML = "";
     }
     showReadyToPlay() {
         this.state = AppState.READY_TO_PLAY;
-        document.getElementById("readyToPlay").style.display = "none";
-        document.getElementById("menu").style.display = "block";
+        document.getElementById("readyToPlay").style.display = "block";
+        document.getElementById("menu").style.display = "none";
     }
     // This should be the event lsitener of the start game button on the ready to play page.
     startGamePressed(event) {
+        console.log("App.startGamePressed");
         this.state = AppState.PLAYING;
         this.gameManager = new GameManager(this.sheet.currentBoard(), this);
-        // TODO change ui
         document.getElementById("board").className = ""; // kell?
         document.getElementById("readyToPlay").style.display = "none";
         document.getElementById("menu").style.display = "none";

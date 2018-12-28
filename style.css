@@ -1,12 +1,12 @@
 body {
   margin: 40px;
   font-family: "Arial", sans-serif;
-  font-size: 1.2em;
+  font-size: 1.8em;
   overscroll-behavior-y: none;
 }
 
 button {
-  font-size: 1.2em;
+  font-size: 1.3em;
 }
 
 :root {

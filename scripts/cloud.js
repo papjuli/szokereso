@@ -37,9 +37,9 @@ function signedOut() {
   document.getElementById("whoami").innerHTML = "";
   document.getElementById("signin-button").style.display = "inline";
   document.getElementById("signout-button").style.display = "none";
-  document.getElementById("unsolved").innerHTML = "";
-  document.getElementById("solvedBySomeone").innerHTML = "";
-  document.getElementById("solvedByMe").innerHTML = "";
+  // document.getElementById("unsolved").innerHTML = "";
+  // document.getElementById("solvedBySomeone").innerHTML = "";
+  // document.getElementById("solvedByMe").innerHTML = "";
 }
 
 function getUserProfile() {
