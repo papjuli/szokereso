@@ -25,9 +25,12 @@ class App {
         this.sheet = new Sheet(this);
         this.sheet.loadLastRow();
         this.showStartPage();
-        document.getElementById("createGameButton").addEventListener("onclick", this.createGamePressed);
-        document.getElementById("startGameButton").addEventListener("onclick", this.startGamePressed);
-        document.getElementById("playLastGameButton").addEventListener("onclick", this.startGamePressed);
+        document.getElementById("createGameButton")
+            .addEventListener("click", (event) => this.createGamePressed(this, event));
+        document.getElementById("startGameButton")
+            .addEventListener("click", (event) => this.startGamePressed(this, event));
+        document.getElementById("playLastGameButton")
+            .addEventListener("click", (event) => this.startGamePressed(this, event));
         console.log("App created");
     }
     // The sheet will notify us when data loading is ready through this function.
@@ -47,11 +50,11 @@ class App {
         }
     }
     // This should be the event listener of the create game button.
-    createGamePressed(event) {
+    createGamePressed(self, event) {
         console.log("App.createGamePressed");
-        let board = this.boardGenerator.generateBoard(3, 300, 30);
-        this.sheet.addNewBoard(board);
-        this.showReadyToPlay();
+        let board = self.boardGenerator.generateBoard(3, 300, 30);
+        self.sheet.addNewBoard(board);
+        self.showReadyToPlay();
     }
     showStartPage() {
         this.state = AppState.START_PAGE;
@@ -80,10 +83,10 @@ class App {
         document.getElementById("menu").style.display = "none";
     }
     // This should be the event lsitener of the start game button on the ready to play page.
-    startGamePressed(event) {
+    startGamePressed(self, event) {
         console.log("App.startGamePressed");
-        this.state = AppState.PLAYING;
-        this.gameManager = new GameManager(this.sheet.currentBoard(), this);
+        self.state = AppState.PLAYING;
+        self.gameManager = new GameManager(self.sheet.currentBoard(), self);
         document.getElementById("board").className = ""; // kell?
         document.getElementById("readyToPlay").style.display = "none";
         document.getElementById("menu").style.display = "none";
@@ -359,9 +362,9 @@ class Game {
                 letter.dataset.col = String(j);
                 letter.dataset.letter = "yes, this is a letter";
                 letter.className = "letter";
-                letter.addEventListener("touchstart", this.touchStart);
-                letter.addEventListener("touchmove", this.touchMove);
-                letter.addEventListener("touchend", this.touchEnd);
+                letter.addEventListener("touchstart", (event) => this.touchStart(this, event));
+                letter.addEventListener("touchmove", (event) => this.touchMove(this, event));
+                letter.addEventListener("touchend", (event) => this.touchEnd(this, event));
                 boardDiv.appendChild(letter);
             }
         }
@@ -376,7 +379,7 @@ class Game {
             return boardDiv;
         return null;
     }
-    target(event) {
+    target(self, event) {
         if (!this.playable) {
             return null;
         }
@@ -401,22 +404,23 @@ class Game {
             child.classList.remove("marked");
         }
     }
-    touchStart(event) {
-        this.selectedLetters.length = 0;
-        let target = this.target(event);
+    touchStart(self, event) {
+        self.selectedLetters.length = 0;
+        let target = self.target(self, event);
         if (target == null)
             return;
-        this.addLetter(target);
+        self.addLetter(target);
     }
-    touchMove(event) {
-        let target = this.target(event);
+    touchMove(self, event) {
+        let target = self.target(self, event);
         if (target == null)
             return;
         // If this drag has not started on a letter, ignore.
-        if (this.selectedLetters.length == 0)
+        if (self.selectedLetters.length == 0)
             return;
-        let dx = target[1][0] - this.selectedLetters[-1][0];
-        let dy = target[1][1] - this.selectedLetters[-1][1];
+        let nLetters = self.selectedLetters.length;
+        let dx = target[1][0] - self.selectedLetters[nLetters - 1][0];
+        let dy = target[1][1] - self.selectedLetters[nLetters - 1][1];
         let d = dx * dx + dy * dy;
         // If the user still touches the last letter, do nothing.
         if (d == 0)
@@ -424,13 +428,13 @@ class Game {
         // If the user touches far from the last letter, do nothing.
         if (d > 2)
             return;
-        this.addLetter(target);
+        self.addLetter(target);
     }
-    touchEnd(event) {
-        this.manager.finalWord(this.word);
-        this.word = "";
-        this.selectedLetters.length = 0;
-        this.unmarkAll();
+    touchEnd(self, event) {
+        self.manager.finalWord(self.word);
+        self.word = "";
+        self.selectedLetters.length = 0;
+        self.unmarkAll();
     }
 }
 class GameManager {
@@ -454,15 +458,15 @@ class GameManager {
         this.ui.setCurrentGuess("");
         this.ui.setTimeRemaining(this.timeRemaining);
         this.ui.setWordRemaining(this.remainingWords);
-        this.timer = setInterval(this.tick, 1000);
+        this.timer = setInterval(() => this.tick(this), 1000);
     }
-    tick() {
-        this.timeRemaining -= 1;
-        this.ui.setTimeRemaining(this.timeRemaining);
-        if (this.timeRemaining <= 0) {
-            this.game.disable();
-            clearInterval(this.timer);
-            this.app.gameOver();
+    tick(self) {
+        self.timeRemaining -= 1;
+        self.ui.setTimeRemaining(self.timeRemaining);
+        if (self.timeRemaining <= 0) {
+            self.game.disable();
+            clearInterval(self.timer);
+            self.app.gameOver();
         }
     }
     partialWord(word) {

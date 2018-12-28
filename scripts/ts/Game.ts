@@ -21,9 +21,9 @@ class Game {
                 letter.dataset.col = String(j);
                 letter.dataset.letter = "yes, this is a letter";
                 letter.className = "letter";
-                letter.addEventListener("touchstart", this.touchStart);
-                letter.addEventListener("touchmove", this.touchMove);
-                letter.addEventListener("touchend", this.touchEnd);
+                letter.addEventListener("touchstart", (event) => this.touchStart(this, event));
+                letter.addEventListener("touchmove", (event) => this.touchMove(this, event));
+                letter.addEventListener("touchend", (event) => this.touchEnd(this, event));
                 boardDiv.appendChild(letter);
             }
         }
@@ -40,7 +40,7 @@ class Game {
         return null;
     }
 
-    private target(event: TouchEvent): [HTMLDivElement, [number, number]] {
+    private target(self: Game, event: TouchEvent): [HTMLDivElement, [number, number]] {
         if (!this.playable) {
             return null;
         }
@@ -68,32 +68,33 @@ class Game {
         }
     }
 
-    private touchStart(event: TouchEvent): void {
-        this.selectedLetters.length = 0;
-        let target = this.target(event);
+    private touchStart(self: Game, event: TouchEvent): void {
+        self.selectedLetters.length = 0;
+        let target = self.target(self, event);
         if (target == null) return;
-        this.addLetter(target);
+        self.addLetter(target);
     }
 
-    private touchMove(event: TouchEvent): void {
-        let target = this.target(event);
+    private touchMove(self: Game, event: TouchEvent): void {
+        let target = self.target(self, event);
         if (target == null) return;
         // If this drag has not started on a letter, ignore.
-        if (this.selectedLetters.length == 0) return;
-        let dx = target[1][0] - this.selectedLetters[-1][0];
-        let dy = target[1][1] - this.selectedLetters[-1][1];
+        if (self.selectedLetters.length == 0) return;
+        let nLetters = self.selectedLetters.length;
+        let dx = target[1][0] - self.selectedLetters[nLetters-1][0];
+        let dy = target[1][1] - self.selectedLetters[nLetters-1][1];
         let d = dx*dx + dy*dy;
         // If the user still touches the last letter, do nothing.
         if (d == 0) return;
         // If the user touches far from the last letter, do nothing.
         if (d > 2) return;
-        this.addLetter(target);
+        self.addLetter(target);
     }
 
-    private touchEnd(event: TouchEvent): void {
-        this.manager.finalWord(this.word);
-        this.word = "";
-        this.selectedLetters.length = 0;
-        this.unmarkAll();
+    private touchEnd(self: Game, event: TouchEvent): void {
+        self.manager.finalWord(self.word);
+        self.word = "";
+        self.selectedLetters.length = 0;
+        self.unmarkAll();
     }
 }

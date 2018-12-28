@@ -37,10 +37,13 @@ class App {
         this.sheet.loadLastRow();
         this.showStartPage();
 
-        document.getElementById("createGameButton").addEventListener("onclick", this.createGamePressed);
-        document.getElementById("startGameButton").addEventListener("onclick", this.startGamePressed);
-        document.getElementById("playLastGameButton").addEventListener("onclick", this.startGamePressed);
-        
+        document.getElementById("createGameButton")
+            .addEventListener("click", (event) => this.createGamePressed(this, event));
+        document.getElementById("startGameButton")
+            .addEventListener("click", (event) => this.startGamePressed(this, event));
+        document.getElementById("playLastGameButton")
+            .addEventListener<"click">("click", (event) => this.startGamePressed(this, event));
+
         console.log("App created");
     }
 
@@ -61,11 +64,11 @@ class App {
     }
 
     // This should be the event listener of the create game button.
-    public createGamePressed(event: Event): void {
+    public createGamePressed(self: App, event: Event): void {
         console.log("App.createGamePressed");
-        let board = this.boardGenerator.generateBoard(3, 300, 30);
-        this.sheet.addNewBoard(board);
-        this.showReadyToPlay();
+        let board = self.boardGenerator.generateBoard(3, 300, 30);
+        self.sheet.addNewBoard(board);
+        self.showReadyToPlay();
     }
 
     private showStartPage(): void {
@@ -99,10 +102,10 @@ class App {
     }
 
     // This should be the event lsitener of the start game button on the ready to play page.
-    public startGamePressed(event: Event): void {
+    public startGamePressed(self: App, event: Event): void {
         console.log("App.startGamePressed");
-        this.state = AppState.PLAYING;
-        this.gameManager = new GameManager(this.sheet.currentBoard(), this);
+        self.state = AppState.PLAYING;
+        self.gameManager = new GameManager(self.sheet.currentBoard(), self);
         document.getElementById("board").className = ""; // kell?
         document.getElementById("readyToPlay").style.display = "none";
         document.getElementById("menu").style.display = "none";

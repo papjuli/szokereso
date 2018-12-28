@@ -25,16 +25,16 @@ class GameManager {
         this.ui.setTimeRemaining(this.timeRemaining);
         this.ui.setWordRemaining(this.remainingWords);
 
-        this.timer = setInterval(this.tick, 1000);
+        this.timer = setInterval(() => this.tick(this), 1000);
     }
 
-    private tick(): void {
-        this.timeRemaining -= 1;
-        this.ui.setTimeRemaining(this.timeRemaining);
-        if (this.timeRemaining <= 0) {
-            this.game.disable();
-            clearInterval(this.timer);
-            this.app.gameOver();
+    private tick(self: GameManager): void {
+        self.timeRemaining -= 1;
+        self.ui.setTimeRemaining(self.timeRemaining);
+        if (self.timeRemaining <= 0) {
+            self.game.disable();
+            clearInterval(self.timer);
+            self.app.gameOver();
         }
     }
 
