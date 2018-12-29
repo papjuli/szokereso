@@ -361,6 +361,7 @@ class Game {
         this.board = board;
         this.manager = manager;
         this.playable = true;
+        this.word = "";
         this.selectedLetters = new Array();
         let boardDiv = this.boardDiv();
         boardDiv.innerHTML = "";

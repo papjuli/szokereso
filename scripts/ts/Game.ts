@@ -7,6 +7,8 @@ class Game {
     constructor(private board: Board, private manager: GameManager) {
         this.playable = true;
 
+        this.word = "";
+
         this.selectedLetters = new Array();
 
         let boardDiv = this.boardDiv();
