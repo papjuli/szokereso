@@ -81,9 +81,16 @@ class Game {
         // If this drag has not started on a letter, ignore.
         if (self.selectedLetters.length == 0) return;
         let nLetters = self.selectedLetters.length;
-        // TODO allow unselecting the last letter by moving back to the
-        // penultimate letter.
-        //
+
+        // When moving back to the penultimate letter, remove the last letter.
+        if (nLetters > 1) {
+            if (target[1][0] == self.selectedLetters[nLetters - 2][0] && 
+                target[1][1] == self.selectedLetters[nLetters - 2][1]) {
+                    self.selectedLetters.pop();
+                    return;
+                }
+        } 
+
         // If the currently touched letter has already been selected, don't
         // select it again.
         for (let selectedLetter of self.selectedLetters) {
