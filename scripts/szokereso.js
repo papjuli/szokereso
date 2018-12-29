@@ -30,6 +30,7 @@ class App {
         document.getElementById("playLastGameButton").addEventListener("click", (event) => this.startGamePressed(this, event));
         document.getElementById("menuButton").addEventListener("click", (event) => this.backToMenuPressed(this, event));
         document.getElementById("stopButton").addEventListener("click", () => this.gameManager.endGame(this.gameManager));
+        document.getElementById("rotateBoard").addEventListener("click", () => this.gameManager.rotateBoard(this.gameManager));
         document.body.addEventListener("touchmove", (event) => this.bodyTouchMove(this, event), { passive: false });
         console.log("App created");
     }
@@ -374,6 +375,7 @@ class Game {
         this.playable = true;
         this.word = "";
         this.selectedLetters = new Array();
+        this.elements = new Array();
         let boardDiv = this.boardDiv();
         boardDiv.innerHTML = "";
         boardDiv.style.setProperty("--boardSize", String(board.size));
@@ -389,6 +391,7 @@ class Game {
                 letter.addEventListener("touchmove", (event) => this.touchMove(this, event));
                 letter.addEventListener("touchend", (event) => this.touchEnd(this, event));
                 boardDiv.appendChild(letter);
+                this.elements.push(letter);
             }
         }
     }
@@ -480,6 +483,30 @@ class Game {
         self.selectedLetters.length = 0;
         self.unmarkAll();
     }
+    rotateBoard() {
+        let newValues = Array(this.board.size);
+        for (let i = 0; i < this.board.size; ++i) {
+            for (let j = 0; j < this.board.size; ++j) {
+                let ii = this.board.size - 1 - j;
+                let jj = i;
+                let n = i * this.board.size + j;
+                let nn = ii * this.board.size + jj;
+                newValues[n] = [
+                    Number(this.elements[nn].dataset.row),
+                    Number(this.elements[nn].dataset.col),
+                    this.elements[nn].innerHTML
+                ];
+            }
+        }
+        for (let i = 0; i < this.board.size; ++i) {
+            for (let j = 0; j < this.board.size; ++j) {
+                let n = i * this.board.size + j;
+                this.elements[n].dataset.row = String(newValues[n][0]);
+                this.elements[n].dataset.col = String(newValues[n][1]);
+                this.elements[n].innerHTML = newValues[n][2];
+            }
+        }
+    }
 }
 class GameManager {
     constructor(board, app) {
@@ -543,6 +570,9 @@ class GameManager {
         self.displayAllWords(self.board.words);
         self.displayTotalScore(self.board.totalScore);
         self.app.gameOver();
+    }
+    rotateBoard(self) {
+        self.game.rotateBoard();
     }
     setTimeRemaining(seconds) {
         document.getElementById("timeLeft").innerHTML =

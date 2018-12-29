@@ -47,7 +47,9 @@ class App {
             "click", (event) => this.backToMenuPressed(this, event));
         document.getElementById("stopButton").addEventListener(
             "click", () => this.gameManager.endGame(this.gameManager));
-        document.body.addEventListener(
+        document.getElementById("rotateBoard").addEventListener(
+            "click", () => this.gameManager.rotateBoard(this.gameManager));
+            document.body.addEventListener(
             "touchmove", (event) => this.bodyTouchMove(this, event), {passive: false});
 
         console.log("App created");

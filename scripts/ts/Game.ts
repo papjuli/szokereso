@@ -3,6 +3,7 @@ class Game {
 
     private selectedLetters: [HTMLDivElement, [number, number]][];
     private word: string;
+    private elements: HTMLElement[];
 
     constructor(private board: Board, private manager: GameManager) {
         this.playable = true;
@@ -10,6 +11,8 @@ class Game {
         this.word = "";
 
         this.selectedLetters = new Array();
+
+        this.elements = new Array();
 
         let boardDiv = this.boardDiv();
         boardDiv.innerHTML = "";
@@ -27,6 +30,7 @@ class Game {
                 letter.addEventListener("touchmove", (event) => this.touchMove(this, event));
                 letter.addEventListener("touchend", (event) => this.touchEnd(this, event));
                 boardDiv.appendChild(letter);
+                this.elements.push(letter);
             }
         }
     }
@@ -122,5 +126,29 @@ class Game {
         self.word = "";
         self.selectedLetters.length = 0;
         self.unmarkAll();
+    }
+
+    private rotateBoard(): void {
+        let newValues = Array<[number, number, string]>(this.board.size);
+        for (let i = 0; i < this.board.size; ++i) {
+            for (let j = 0; j < this.board.size; ++j) {
+                let ii = this.board.size - 1 - j;
+                let jj = i;
+                let n = i * this.board.size + j;
+                let nn = ii * this.board.size + jj;
+                newValues[n] = [
+                    Number(this.elements[nn].dataset.row),
+                    Number(this.elements[nn].dataset.col),
+                    this.elements[nn].innerHTML];
+            }
+        }
+        for (let i = 0; i < this.board.size; ++i) {
+            for (let j = 0; j < this.board.size; ++j) {
+                let n = i * this.board.size + j;
+                this.elements[n].dataset.row = String(newValues[n][0]);
+                this.elements[n].dataset.col = String(newValues[n][1]);
+                this.elements[n].innerHTML = newValues[n][2];
+            }
+        }
     }
 }

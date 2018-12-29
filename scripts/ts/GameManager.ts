@@ -69,6 +69,10 @@ class GameManager {
         self.app.gameOver();
     }
 
+    public rotateBoard(self): void {
+        self.game.rotateBoard();
+    }
+
     public setTimeRemaining(seconds: number): void {
         document.getElementById("timeLeft").innerHTML = 
             String(Math.floor(seconds / 60) + ":" + ("00" + seconds % 60).slice(-2));
