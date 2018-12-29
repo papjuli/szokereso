@@ -45,6 +45,8 @@ class App {
             "click", (event) => this.startGamePressed(this, event));
         document.getElementById("menuButton").addEventListener(
             "click", (event) => this.backToMenuPressed(this, event));
+        document.getElementById("stopButton").addEventListener(
+            "click", () => this.gameManager.endGame(this.gameManager));
         document.body.addEventListener(
             "touchmove", (event) => this.bodyTouchMove(this, event), {passive: false});
 
