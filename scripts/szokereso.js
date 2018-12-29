@@ -29,6 +29,7 @@ class App {
         document.getElementById("startGameButton").addEventListener("click", (event) => this.startGamePressed(this, event));
         document.getElementById("playLastGameButton").addEventListener("click", (event) => this.startGamePressed(this, event));
         document.getElementById("menuButton").addEventListener("click", (event) => this.backToMenuPressed(this, event));
+        document.body.addEventListener("touchmove", (event) => this.bodyTouchMove(this, event));
         console.log("App created");
     }
     // The sheet will notify us when data loading is ready through this function.
@@ -108,6 +109,11 @@ class App {
         document.getElementById("results").style.display = "none";
         document.getElementById("game").style.display = "none";
     }
+    bodyTouchMove(self, event) {
+        if (self.state == AppState.PLAYING) {
+            event.preventDefault();
+        }
+    }
 }
 class Board {
     constructor(size, timeSeconds) {
@@ -171,7 +177,6 @@ class Board {
 }
 class BoardGenerator {
     constructor(vocabulary) {
-        var _a;
         this.Cell = (_a = class Cell {
                 constructor(row, col, prevLo, prevHi, prefix, vocab) {
                     this.row = row;
@@ -245,6 +250,7 @@ class BoardGenerator {
         vocabulary.sort();
         this.vocab = vocabulary;
         this.getLetterFreqs();
+        var _a;
     }
     generateBoard(size, timeSeconds, scoreThreshold) {
         while (true) {

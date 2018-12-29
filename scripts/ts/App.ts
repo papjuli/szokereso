@@ -45,6 +45,8 @@ class App {
             "click", (event) => this.startGamePressed(this, event));
         document.getElementById("menuButton").addEventListener(
             "click", (event) => this.backToMenuPressed(this, event));
+        document.body.addEventListener(
+            "touchmove", (event) => this.bodyTouchMove(this, event));
 
         console.log("App created");
     }
@@ -132,5 +134,11 @@ class App {
         document.getElementById("menu").style.display = "block";
         document.getElementById("results").style.display = "none";
         document.getElementById("game").style.display = "none";
+    }
+
+    public bodyTouchMove(self: App, event: Event): void {
+        if (self.state == AppState.PLAYING) {
+            event.preventDefault();
+        }
     }
 }
