@@ -430,6 +430,16 @@ class Game {
         if (self.selectedLetters.length == 0)
             return;
         let nLetters = self.selectedLetters.length;
+        // TODO allow unselecting the last letter by moving back to the
+        // penultimate letter.
+        //
+        // If the currently touched letter has already been selected, don't
+        // select it again.
+        for (let selectedLetter of self.selectedLetters) {
+            if (target[1][0] == selectedLetter[0] && target[1][1] == selectedLetter[1]) {
+                return;
+            }
+        }
         let dx = target[1][0] - self.selectedLetters[nLetters - 1][0];
         let dy = target[1][1] - self.selectedLetters[nLetters - 1][1];
         let d = dx * dx + dy * dy;
