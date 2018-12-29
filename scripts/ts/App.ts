@@ -108,12 +108,11 @@ class App {
         console.log("App.startGamePressed");
         self.state = AppState.PLAYING;
         self.gameManager = new GameManager(self.sheet.currentBoard(), self);
-        document.getElementById("board").className = ""; // kell?
+        document.getElementById("board").classList.remove("unplayable"); // kell?
         document.getElementById("readyToPlay").style.display = "none";
         document.getElementById("menu").style.display = "none";
         document.getElementById("results").style.display = "none";
         document.getElementById("game").style.display = "block";
-        // document.getElementById("timer").style.display = "block";
         document.getElementById("standing").style.display = "block";
         document.getElementById("timeLeftPar").style.display = "block";
         document.getElementById("timeIsUp").style.display = "none";
@@ -124,10 +123,7 @@ class App {
     // the 'give up' button).
     public gameOver(): void {
         this.state = AppState.FINISHED_PLAYING;
-        // TODO change ui
-        document.getElementById("board").className += " unplayable"; // kell?
-        // document.getElementById("standing").style.display = "none";
-        // document.getElementById("timer").style.display = "none";
+        document.getElementById("board").classList.add("unplayable"); // kell?
         document.getElementById("timeLeftPar").style.display = "none";
         document.getElementById("timeIsUp").style.display = "block";
         document.getElementById("results").style.display = "block";
@@ -143,8 +139,7 @@ class App {
         document.getElementById("results").style.display = "none";
         document.getElementById("game").style.display = "none";
         document.getElementById("standing").style.display = "none";
-        // document.getElementById("timer").style.display = "none";
-
+        document.getElementById("found").innerHTML = "";
     }
 
     public bodyTouchMove(self: App, event: Event): void {

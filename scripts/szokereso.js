@@ -84,12 +84,11 @@ class App {
         console.log("App.startGamePressed");
         self.state = AppState.PLAYING;
         self.gameManager = new GameManager(self.sheet.currentBoard(), self);
-        document.getElementById("board").className = ""; // kell?
+        document.getElementById("board").classList.remove("unplayable"); // kell?
         document.getElementById("readyToPlay").style.display = "none";
         document.getElementById("menu").style.display = "none";
         document.getElementById("results").style.display = "none";
         document.getElementById("game").style.display = "block";
-        // document.getElementById("timer").style.display = "block";
         document.getElementById("standing").style.display = "block";
         document.getElementById("timeLeftPar").style.display = "block";
         document.getElementById("timeIsUp").style.display = "none";
@@ -99,10 +98,7 @@ class App {
     // the 'give up' button).
     gameOver() {
         this.state = AppState.FINISHED_PLAYING;
-        // TODO change ui
-        document.getElementById("board").className += " unplayable"; // kell?
-        // document.getElementById("standing").style.display = "none";
-        // document.getElementById("timer").style.display = "none";
+        document.getElementById("board").classList.add("unplayable"); // kell?
         document.getElementById("timeLeftPar").style.display = "none";
         document.getElementById("timeIsUp").style.display = "block";
         document.getElementById("results").style.display = "block";
@@ -117,7 +113,7 @@ class App {
         document.getElementById("results").style.display = "none";
         document.getElementById("game").style.display = "none";
         document.getElementById("standing").style.display = "none";
-        // document.getElementById("timer").style.display = "none";
+        document.getElementById("found").innerHTML = "";
     }
     bodyTouchMove(self, event) {
         if (self.state == AppState.PLAYING) {
@@ -489,9 +485,9 @@ class GameManager {
         this.board = board;
         this.app = app;
         this.game = new Game(board, this);
-        this.ui = new GameUI();
         this.score = 0;
         this.timeRemaining = board.timeSeconds;
+        this.foundWords = new Array();
         this.remainingWords = [0, 0, 0, 0, 0, 0, 0];
         for (let word of board.words) {
             let len = word.length;
@@ -501,31 +497,30 @@ class GameManager {
                 len = 8;
             this.remainingWords[len - 2] += 1;
         }
-        this.ui.setScore(this.score);
-        this.ui.setCurrentGuess("");
-        this.ui.setTimeRemaining(this.timeRemaining);
-        this.ui.setWordRemaining(this.remainingWords);
+        this.setScore(this.score);
+        this.setCurrentGuess("");
+        this.setTimeRemaining(this.timeRemaining);
+        this.setWordRemaining(this.remainingWords);
         this.timer = setInterval(() => this.tick(this), 1000);
     }
     tick(self) {
         self.timeRemaining -= 1;
-        self.ui.setTimeRemaining(self.timeRemaining);
+        self.setTimeRemaining(self.timeRemaining);
         if (self.timeRemaining <= 0) {
             self.game.disable();
             clearInterval(self.timer);
-            self.ui.displayAllWords(self.board.words);
-            console.log("Total score: " + String(self.board.totalScore));
-            self.ui.displayTotalScore(self.board.totalScore);
+            self.displayAllWords(self.board.words);
+            self.displayTotalScore(self.board.totalScore);
             self.app.gameOver();
         }
     }
     partialWord(word) {
-        this.ui.setCurrentGuess(word);
+        this.setCurrentGuess(word);
     }
     finalWord(word) {
-        this.ui.setCurrentGuess("");
-        // TODO: update UI
-        if (this.board.words.indexOf(word) >= 0) {
+        this.setCurrentGuess("");
+        if (this.board.words.indexOf(word) >= 0
+            && this.foundWords.indexOf(word) == -1) {
             this.score += Board.getWordScore(word);
             let len = word.length;
             if (len > 8)
@@ -533,14 +528,11 @@ class GameManager {
             if (len >= 2) {
                 this.remainingWords[len - 2] -= 1;
             }
-            this.ui.setScore(this.score);
-            this.ui.setWordRemaining(this.remainingWords);
-            this.ui.addFoundWord(word);
+            this.setScore(this.score);
+            this.setWordRemaining(this.remainingWords);
+            this.addFoundWord(word);
         }
     }
-}
-class GameUI {
-    constructor() { this.foundWords = new Array(); }
     setTimeRemaining(seconds) {
         document.getElementById("timeLeft").innerHTML =
             String(Math.floor(seconds / 60) + ":" + ("00" + seconds % 60).slice(-2));
