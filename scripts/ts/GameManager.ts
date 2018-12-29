@@ -31,11 +31,7 @@ class GameManager {
         self.timeRemaining -= 1;
         self.setTimeRemaining(self.timeRemaining);
         if (self.timeRemaining <= 0) {
-            self.game.disable();
-            clearInterval(self.timer);
-            self.displayAllWords(self.board.words);
-            self.displayTotalScore(self.board.totalScore);
-            self.app.gameOver();
+            self.endGame(self);
         }
     }
 
@@ -57,6 +53,14 @@ class GameManager {
             this.setWordRemaining(this.remainingWords);
             this.addFoundWord(word);
         }
+    }
+
+    public endGame(self): void {
+        self.game.disable();
+        clearInterval(self.timer);
+        self.displayAllWords(self.board.words);
+        self.displayTotalScore(self.board.totalScore);
+        self.app.gameOver();
     }
 
     public setTimeRemaining(seconds: number): void {

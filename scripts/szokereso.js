@@ -29,6 +29,7 @@ class App {
         document.getElementById("startGameButton").addEventListener("click", (event) => this.startGamePressed(this, event));
         document.getElementById("playLastGameButton").addEventListener("click", (event) => this.startGamePressed(this, event));
         document.getElementById("menuButton").addEventListener("click", (event) => this.backToMenuPressed(this, event));
+        document.getElementById("stopButton").addEventListener("click", () => this.gameManager.endGame(this.gameManager));
         document.body.addEventListener("touchmove", (event) => this.bodyTouchMove(this, event), { passive: false });
         console.log("App created");
     }
@@ -507,11 +508,7 @@ class GameManager {
         self.timeRemaining -= 1;
         self.setTimeRemaining(self.timeRemaining);
         if (self.timeRemaining <= 0) {
-            self.game.disable();
-            clearInterval(self.timer);
-            self.displayAllWords(self.board.words);
-            self.displayTotalScore(self.board.totalScore);
-            self.app.gameOver();
+            self.endGame(self);
         }
     }
     partialWord(word) {
@@ -532,6 +529,13 @@ class GameManager {
             this.setWordRemaining(this.remainingWords);
             this.addFoundWord(word);
         }
+    }
+    endGame(self) {
+        self.game.disable();
+        clearInterval(self.timer);
+        self.displayAllWords(self.board.words);
+        self.displayTotalScore(self.board.totalScore);
+        self.app.gameOver();
     }
     setTimeRemaining(seconds) {
         document.getElementById("timeLeft").innerHTML =
