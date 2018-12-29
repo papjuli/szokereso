@@ -84,21 +84,25 @@ class App {
         console.log("App.startGamePressed");
         self.state = AppState.PLAYING;
         self.gameManager = new GameManager(self.sheet.currentBoard(), self);
-        document.getElementById("board").className = ""; // kell?
+        document.getElementById("board").classList.remove("unplayable"); // kell?
         document.getElementById("readyToPlay").style.display = "none";
         document.getElementById("menu").style.display = "none";
         document.getElementById("results").style.display = "none";
         document.getElementById("game").style.display = "block";
+        document.getElementById("standing").style.display = "block";
+        document.getElementById("timeLeftPar").style.display = "block";
+        document.getElementById("timeIsUp").style.display = "none";
+        document.getElementById("stopButton").style.display = "block";
     }
     // Called by the game manager, when the game ends (either by out of time or by clicking
     // the 'give up' button).
     gameOver() {
         this.state = AppState.FINISHED_PLAYING;
-        // TODO change ui
-        document.getElementById("board").className += " unplayable"; // kell?
-        document.getElementById("gameplay").style.display = "none";
-        document.getElementById("timer").style.display = "none";
-        document.getElementById("results").style.display = "inline";
+        document.getElementById("board").classList.add("unplayable"); // kell?
+        document.getElementById("timeLeftPar").style.display = "none";
+        document.getElementById("timeIsUp").style.display = "block";
+        document.getElementById("results").style.display = "block";
+        document.getElementById("stopButton").style.display = "none";
     }
     backToMenuPressed(self, event) {
         console.log("App.backPressed");
@@ -108,6 +112,8 @@ class App {
         document.getElementById("menu").style.display = "block";
         document.getElementById("results").style.display = "none";
         document.getElementById("game").style.display = "none";
+        document.getElementById("standing").style.display = "none";
+        document.getElementById("found").innerHTML = "";
     }
     bodyTouchMove(self, event) {
         if (self.state == AppState.PLAYING) {
@@ -133,9 +139,11 @@ class Board {
         let board = new Board(boardObj.size, boardObj.timeSeconds);
         for (var prop in boardObj)
             board[prop] = boardObj[prop];
+        board.setScoreFromWords();
         return board;
     }
     setWords(words) {
+        console.log("setWords");
         this.words = new Array();
         for (let word of words) {
             this.words.push(word);
@@ -144,6 +152,7 @@ class Board {
         this.setScoreFromWords();
     }
     setScoreFromWords() {
+        console.log("setScoreFromWords");
         this.totalScore = 0;
         for (let word of this.words) {
             this.totalScore += Board.getWordScore(word);
@@ -317,6 +326,7 @@ class BoardGenerator {
             }
         }
         board.setWords(words);
+        board.setScoreFromWords();
         let allCovered = true;
         for (let row of covered) {
             for (let element of row) {
@@ -475,9 +485,9 @@ class GameManager {
         this.board = board;
         this.app = app;
         this.game = new Game(board, this);
-        this.ui = new GameUI();
         this.score = 0;
         this.timeRemaining = board.timeSeconds;
+        this.foundWords = new Array();
         this.remainingWords = [0, 0, 0, 0, 0, 0, 0];
         for (let word of board.words) {
             let len = word.length;
@@ -487,28 +497,30 @@ class GameManager {
                 len = 8;
             this.remainingWords[len - 2] += 1;
         }
-        this.ui.setScore(this.score);
-        this.ui.setCurrentGuess("");
-        this.ui.setTimeRemaining(this.timeRemaining);
-        this.ui.setWordRemaining(this.remainingWords);
+        this.setScore(this.score);
+        this.setCurrentGuess("");
+        this.setTimeRemaining(this.timeRemaining);
+        this.setWordRemaining(this.remainingWords);
         this.timer = setInterval(() => this.tick(this), 1000);
     }
     tick(self) {
         self.timeRemaining -= 1;
-        self.ui.setTimeRemaining(self.timeRemaining);
+        self.setTimeRemaining(self.timeRemaining);
         if (self.timeRemaining <= 0) {
             self.game.disable();
             clearInterval(self.timer);
+            self.displayAllWords(self.board.words);
+            self.displayTotalScore(self.board.totalScore);
             self.app.gameOver();
         }
     }
     partialWord(word) {
-        this.ui.setCurrentGuess(word);
+        this.setCurrentGuess(word);
     }
     finalWord(word) {
-        this.ui.setCurrentGuess("");
-        let kind = "Incorrect";
-        if (this.board.words.indexOf(word) >= 0) {
+        this.setCurrentGuess("");
+        if (this.board.words.indexOf(word) >= 0
+            && this.foundWords.indexOf(word) == -1) {
             this.score += Board.getWordScore(word);
             let len = word.length;
             if (len > 8)
@@ -516,27 +528,17 @@ class GameManager {
             if (len >= 2) {
                 this.remainingWords[len - 2] -= 1;
             }
-            this.ui.setScore(this.score);
-            this.ui.setWordRemaining(this.remainingWords);
-            this.ui.addFoundWord(word);
-            kind = "Correct";
+            this.setScore(this.score);
+            this.setWordRemaining(this.remainingWords);
+            this.addFoundWord(word);
         }
-        this.ui.setFinalGuess(word, kind);
     }
-}
-class GameUI {
-    constructor() { this.foundWords = new Array(); }
     setTimeRemaining(seconds) {
         document.getElementById("timeLeft").innerHTML =
             String(Math.floor(seconds / 60) + ":" + ("00" + seconds % 60).slice(-2));
     }
     setCurrentGuess(word) {
         document.getElementById("currentWord").innerHTML = word;
-        document.getElementById("guessedWord").className = "guessedWordHidden";
-    }
-    setFinalGuess(word, kind) {
-        document.getElementById("guessedWord").innerHTML = word;
-        document.getElementById("guessedWord").className = "guessedWord" + kind;
     }
     setScore(score) {
         document.getElementById("score").innerHTML = String(score);
@@ -551,6 +553,13 @@ class GameUI {
         this.foundWords.push(word);
         this.foundWords.sort();
         document.getElementById("found").innerHTML = this.foundWords.join(" ");
+    }
+    displayAllWords(words) {
+        document.getElementById("allWords").innerHTML =
+            words.join(", ");
+    }
+    displayTotalScore(totalScore) {
+        document.getElementById("totalScore").innerHTML = String(totalScore);
     }
 }
 class Sheet {

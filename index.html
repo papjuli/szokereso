@@ -62,9 +62,9 @@
 
 <div id="game" style="display:none">
   <div id="timer">
-    <p>Time left: <span id="timeLeft"></span> </p>
+    <p id="timeLeftPar">Time left: <span id="timeLeft"></span> </p>
     <!-- Todo toggle visibility -->
-    <p style="display:none;">Time is up!</p> 
+    <p id="timeIsUp" style="display:none;">Time is up!</p> 
   </div>
 
   <div id="wordGuessContainer" style="height:50px">
@@ -73,7 +73,7 @@
   </div>
   <div data-letter=0 id="board"></div>
 
-  <div id="gameplay">
+  <div id="standing">
     <table>
       <tr><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8+</th></tr>
       <tr id="remainingWordCounts">
