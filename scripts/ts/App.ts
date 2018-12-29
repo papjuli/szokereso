@@ -46,7 +46,7 @@ class App {
         document.getElementById("menuButton").addEventListener(
             "click", (event) => this.backToMenuPressed(this, event));
         document.body.addEventListener(
-            "touchmove", (event) => this.bodyTouchMove(this, event));
+            "touchmove", (event) => this.bodyTouchMove(this, event), {passive: false});
 
         console.log("App created");
     }

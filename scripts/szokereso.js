@@ -29,7 +29,7 @@ class App {
         document.getElementById("startGameButton").addEventListener("click", (event) => this.startGamePressed(this, event));
         document.getElementById("playLastGameButton").addEventListener("click", (event) => this.startGamePressed(this, event));
         document.getElementById("menuButton").addEventListener("click", (event) => this.backToMenuPressed(this, event));
-        document.body.addEventListener("touchmove", (event) => this.bodyTouchMove(this, event));
+        document.body.addEventListener("touchmove", (event) => this.bodyTouchMove(this, event), { passive: false });
         console.log("App created");
     }
     // The sheet will notify us when data loading is ready through this function.
