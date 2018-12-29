@@ -519,19 +519,26 @@ class GameManager {
     }
     finalWord(word) {
         this.setCurrentGuess("");
-        if (this.board.words.indexOf(word) >= 0
-            && this.foundWords.indexOf(word) == -1) {
-            this.score += Board.getWordScore(word);
-            let len = word.length;
-            if (len > 8)
-                len = 8;
-            if (len >= 2) {
-                this.remainingWords[len - 2] -= 1;
+        let kind = "Incorrect";
+        if (this.board.words.indexOf(word) >= 0) {
+            if (this.foundWords.indexOf(word) == -1) {
+                kind = "Correct";
+                this.score += Board.getWordScore(word);
+                let len = word.length;
+                if (len > 8)
+                    len = 8;
+                if (len >= 2) {
+                    this.remainingWords[len - 2] -= 1;
+                }
+                this.setScore(this.score);
+                this.setWordRemaining(this.remainingWords);
+                this.addFoundWord(word);
             }
-            this.setScore(this.score);
-            this.setWordRemaining(this.remainingWords);
-            this.addFoundWord(word);
+            else {
+                kind = "Duplicate";
+            }
         }
+        this.setGuessedWord(word, kind);
     }
     setTimeRemaining(seconds) {
         document.getElementById("timeLeft").innerHTML =
@@ -539,6 +546,11 @@ class GameManager {
     }
     setCurrentGuess(word) {
         document.getElementById("currentWord").innerHTML = word;
+        document.getElementById("guessedWord").className = "guessedWordHidden";
+    }
+    setGuessedWord(word, kind) {
+        document.getElementById("guessedWord").innerHTML = word;
+        document.getElementById("guessedWord").className = "guessedWord" + kind;
     }
     setScore(score) {
         document.getElementById("score").innerHTML = String(score);
