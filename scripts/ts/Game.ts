@@ -62,6 +62,13 @@ class Game {
         this.manager.partialWord(this.word);
     }
 
+    private removeLetter(target: [HTMLDivElement, [number, number]]): void {
+        this.selectedLetters.pop();
+        target[0].classList.remove("marked");
+        this.word = this.word.substring(0, this.word.length - 1);
+        this.manager.partialWord(this.word);
+    }
+
     private unmarkAll(): void {
         for (let child of this.boardDiv().children) {
             child.classList.remove("marked");
@@ -86,7 +93,7 @@ class Game {
         if (nLetters > 1) {
             if (target[1][0] == self.selectedLetters[nLetters - 2][0] && 
                 target[1][1] == self.selectedLetters[nLetters - 2][1]) {
-                    self.selectedLetters.pop();
+                    self.removeLetter(target);
                     return;
                 }
         } 
