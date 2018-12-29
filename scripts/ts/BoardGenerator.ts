@@ -82,6 +82,7 @@ class BoardGenerator {
     }
 
     board.setWords(words);
+    board.setScoreFromWords();
 
     let allCovered: boolean = true;
     for (let row of covered) {

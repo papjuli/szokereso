@@ -28,18 +28,13 @@ function signedIn(googleUser) {
   document.getElementById("whoami").innerHTML = profile.getEmail() + " " + profile.getName();
   document.getElementById("signin-button").style.display = "none";
   document.getElementById("signout-button").style.display = "inline";
-  // loadBoardList(profile);
   app = new App(hungarian_vocabulary.words);
-  loadLatestBoard(profile);
 }
 
 function signedOut() {
   document.getElementById("whoami").innerHTML = "";
   document.getElementById("signin-button").style.display = "inline";
   document.getElementById("signout-button").style.display = "none";
-  // document.getElementById("unsolved").innerHTML = "";
-  // document.getElementById("solvedBySomeone").innerHTML = "";
-  // document.getElementById("solvedByMe").innerHTML = "";
 }
 
 function getUserProfile() {
@@ -57,98 +52,12 @@ function handleSignOutClick(event) {
   auth2.signOut().then(signedOut);
 }
 
-// nem kell
-function loadLatestBoard(profile) {
-  if (!profile) {
-    profile = getUserProfile();
-  }
-  gapi.client.sheets.spreadsheets.values.get({
-    spreadsheetId: '1u9w_rAWrPBUnmQ_G4TYvnIEDifVQg4HWKhbqvFET2Yk',
-    range: 'games!A1:Z9999',
-  }).then(function(result) {
-    console.log(result);
-  })
-}
-
-// kell
 function loadAllRows() {
   console.log("loadAllRows");
   return gapi.client.sheets.spreadsheets.values.get({
     spreadsheetId: '1u9w_rAWrPBUnmQ_G4TYvnIEDifVQg4HWKhbqvFET2Yk',
     range: 'games!A1:Z9999',
   });  // return a Promise
-}
-
-// nem kell
-function loadBoardList(profile) {
-  if (!profile) {
-    profile = getUserProfile();
-  }
-  gapi.client.sheets.spreadsheets.values.get({
-    spreadsheetId: '1u9w_rAWrPBUnmQ_G4TYvnIEDifVQg4HWKhbqvFET2Yk',
-    range: 'A1:Z9999',
-  }).then(function(result) {
-    console.log(result);
-    var rows = result.result.values;
-    var sizes = new Map();
-    sizes.set("unsolved", new Map());
-    sizes.set("solvedBySomeone", new Map());
-    sizes.set("solvedByMe", new Map());
-    document.getElementById("unsolved").innerHTML = "";
-    document.getElementById("solvedBySomeone").innerHTML = "";
-    document.getElementById("solvedByMe").innerHTML = "";
-    for (i=0; i<rows.length; ++i) {
-      var b = document.createElement("button");
-      b.innerHTML = "Load board " + (i + 1);
-      b.dataset.json = rows[i][0];
-      b.dataset.sheetRow = i+1;
-      b.dataset.playable = true;
-      b.addEventListener("click", startGame);
-      var kind = "unsolved";
-      if (rows[i].length > 1) {
-        kind = "solvedBySomeone";
-        for (j = 1; j < rows[i].length; ++j) {
-          if (rows[i][j] == profile.getEmail()) {
-            kind = "solvedByMe";
-            b.dataset.playable = false;
-          }
-        }
-      }
-      var currentSizes = sizes.get(kind);
-      var currentDiv = document.getElementById(kind);
-      var parsedBoard = JSON.parse(b.dataset.json);
-      var sizeAndTime = "Size " + parsedBoard.size + " time " + parsedBoard.timeSeconds;
-      if (!currentSizes.has(sizeAndTime)) {
-        var titleDiv = document.createElement("div");
-        titleDiv.innerHTML = sizeAndTime;
-        currentDiv.appendChild(titleDiv);
-        contentDiv = document.createElement("div");
-        currentSizes.set(sizeAndTime, contentDiv);
-        currentDiv.appendChild(contentDiv);
-      }
-      currentSizes.get(sizeAndTime).appendChild(b);
-    }
-  });
-}
-
-// nem kell
-function getBoardResults() {
-  var range = "A" + szk.sheetRow + ":Z" + szk.sheetRow;
-  gapi.client.sheets.spreadsheets.values.get({
-      spreadsheetId: '1u9w_rAWrPBUnmQ_G4TYvnIEDifVQg4HWKhbqvFET2Yk',
-      range: range,
-    }).then(function(result) {
-      console.log(result);
-      var list = document.getElementById("boardResults");
-      list.innerHTML = "";
-      row = result.result.values[0];
-      for (i = 1; i < row.length; i += 4) {
-        var r = document.createElement("li");
-        r.innerHTML = row[i+1] + " &lt" + row[i] + "&gt: <br>Score: " + row[i+2]  + "<br>Words found: " + row[i+3];
-        list.appendChild(r);
-      }
-      document.getElementById("allWords").innerHTML = szk.boardData.words.join(", ");
-  });
 }
 
 // kell
@@ -173,44 +82,129 @@ function updateSheet(range, value) {
 }
 
 // nem kell
-function saveBoardResult() {
-  unmarkAll();
-  console.log("Saving...");
-  var profile = getUserProfile();
-  console.log(profile);
+// function loadLatestBoard(profile) {
+//   if (!profile) {
+//     profile = getUserProfile();
+//   }
+//   gapi.client.sheets.spreadsheets.values.get({
+//     spreadsheetId: '1u9w_rAWrPBUnmQ_G4TYvnIEDifVQg4HWKhbqvFET2Yk',
+//     range: 'games!A1:Z9999',
+//   }).then(function(result) {
+//     console.log(result);
+//   })
+// }
 
-  var range = "A" + szk.sheetRow + ":Z" + szk.sheetRow;
-  szk.emptyColIndex = -1;
-  gapi.client.sheets.spreadsheets.values.get({
-      spreadsheetId: '1u9w_rAWrPBUnmQ_G4TYvnIEDifVQg4HWKhbqvFET2Yk',
-      range: range,
-    }).then(function(result) {
-      console.log(result);
-      szk.emptyColIndex = result.result.values[0].length;
-      console.log(szk.emptyColIndex);
-  }).then(function() {
-      var range = String.fromCharCode("A".charCodeAt(0) + szk.emptyColIndex) + szk.sheetRow;
+// nem kell
+// function loadBoardList(profile) {
+//   if (!profile) {
+//     profile = getUserProfile();
+//   }
+//   gapi.client.sheets.spreadsheets.values.get({
+//     spreadsheetId: '1u9w_rAWrPBUnmQ_G4TYvnIEDifVQg4HWKhbqvFET2Yk',
+//     range: 'A1:Z9999',
+//   }).then(function(result) {
+//     console.log(result);
+//     var rows = result.result.values;
+//     var sizes = new Map();
+//     sizes.set("unsolved", new Map());
+//     sizes.set("solvedBySomeone", new Map());
+//     sizes.set("solvedByMe", new Map());
+//     document.getElementById("unsolved").innerHTML = "";
+//     document.getElementById("solvedBySomeone").innerHTML = "";
+//     document.getElementById("solvedByMe").innerHTML = "";
+//     for (i=0; i<rows.length; ++i) {
+//       var b = document.createElement("button");
+//       b.innerHTML = "Load board " + (i + 1);
+//       b.dataset.json = rows[i][0];
+//       b.dataset.sheetRow = i+1;
+//       b.dataset.playable = true;
+//       b.addEventListener("click", startGame);
+//       var kind = "unsolved";
+//       if (rows[i].length > 1) {
+//         kind = "solvedBySomeone";
+//         for (j = 1; j < rows[i].length; ++j) {
+//           if (rows[i][j] == profile.getEmail()) {
+//             kind = "solvedByMe";
+//             b.dataset.playable = false;
+//           }
+//         }
+//       }
+//       var currentSizes = sizes.get(kind);
+//       var currentDiv = document.getElementById(kind);
+//       var parsedBoard = JSON.parse(b.dataset.json);
+//       var sizeAndTime = "Size " + parsedBoard.size + " time " + parsedBoard.timeSeconds;
+//       if (!currentSizes.has(sizeAndTime)) {
+//         var titleDiv = document.createElement("div");
+//         titleDiv.innerHTML = sizeAndTime;
+//         currentDiv.appendChild(titleDiv);
+//         contentDiv = document.createElement("div");
+//         currentSizes.set(sizeAndTime, contentDiv);
+//         currentDiv.appendChild(contentDiv);
+//       }
+//       currentSizes.get(sizeAndTime).appendChild(b);
+//     }
+//   });
+// }
 
-      console.log(range);
-      gapi.client.sheets.spreadsheets.values.update({
-        spreadsheetId: '1u9w_rAWrPBUnmQ_G4TYvnIEDifVQg4HWKhbqvFET2Yk',
-        range: range,
-        valueInputOption: "RAW",
-        resource: {
-          values: [
-            [profile.getEmail(), profile.getName(), szk.score,
-             szk.foundWords.length == 0 ? " " : szk.foundWords.join(", ")],
-          ],
-        }
-      }).then(function(err, result) {
-        if(err) {
-          // Handle error
-          console.log(err);
-        } else {
-          console.log('%d cells updated.', result.updatedCells);
-        }
-      });
-      makeUnplayable();
-  });
+// nem kell
+// function getBoardResults() {
+//   var range = "A" + szk.sheetRow + ":Z" + szk.sheetRow;
+//   gapi.client.sheets.spreadsheets.values.get({
+//       spreadsheetId: '1u9w_rAWrPBUnmQ_G4TYvnIEDifVQg4HWKhbqvFET2Yk',
+//       range: range,
+//     }).then(function(result) {
+//       console.log(result);
+//       var list = document.getElementById("boardResults");
+//       list.innerHTML = "";
+//       row = result.result.values[0];
+//       for (i = 1; i < row.length; i += 4) {
+//         var r = document.createElement("li");
+//         r.innerHTML = row[i+1] + " &lt" + row[i] + "&gt: <br>Score: " + row[i+2]  + "<br>Words found: " + row[i+3];
+//         list.appendChild(r);
+//       }
+//       document.getElementById("allWords").innerHTML = szk.boardData.words.join(", ");
+//   });
+// }
 
-}
+// nem kell
+// function saveBoardResult() {
+//   unmarkAll();
+//   console.log("Saving...");
+//   var profile = getUserProfile();
+//   console.log(profile);
+
+//   var range = "A" + szk.sheetRow + ":Z" + szk.sheetRow;
+//   szk.emptyColIndex = -1;
+//   gapi.client.sheets.spreadsheets.values.get({
+//       spreadsheetId: '1u9w_rAWrPBUnmQ_G4TYvnIEDifVQg4HWKhbqvFET2Yk',
+//       range: range,
+//     }).then(function(result) {
+//       console.log(result);
+//       szk.emptyColIndex = result.result.values[0].length;
+//       console.log(szk.emptyColIndex);
+//   }).then(function() {
+//       var range = String.fromCharCode("A".charCodeAt(0) + szk.emptyColIndex) + szk.sheetRow;
+
+//       console.log(range);
+//       gapi.client.sheets.spreadsheets.values.update({
+//         spreadsheetId: '1u9w_rAWrPBUnmQ_G4TYvnIEDifVQg4HWKhbqvFET2Yk',
+//         range: range,
+//         valueInputOption: "RAW",
+//         resource: {
+//           values: [
+//             [profile.getEmail(), profile.getName(), szk.score,
+//              szk.foundWords.length == 0 ? " " : szk.foundWords.join(", ")],
+//           ],
+//         }
+//       }).then(function(err, result) {
+//         if(err) {
+//           // Handle error
+//           console.log(err);
+//         } else {
+//           console.log('%d cells updated.', result.updatedCells);
+//         }
+//       });
+//       makeUnplayable();
+//   });
+
+// }

@@ -34,6 +34,9 @@ class GameManager {
         if (self.timeRemaining <= 0) {
             self.game.disable();
             clearInterval(self.timer);
+            self.ui.displayAllWords(self.board.words);
+            console.log("Total score: " + String(self.board.totalScore));
+            self.ui.displayTotalScore(self.board.totalScore);
             self.app.gameOver();
         }
     }

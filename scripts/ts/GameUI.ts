@@ -28,4 +28,13 @@ class GameUI {
         this.foundWords.sort();
         document.getElementById("found").innerHTML = this.foundWords.join(" ");
     }
+
+    public displayAllWords(words: string[]): void {
+        document.getElementById("allWords").innerHTML = 
+            words.join(", ");
+    }
+
+    public displayTotalScore(totalScore: number): void {
+        document.getElementById("totalScore").innerHTML = String(totalScore);
+    }
 }

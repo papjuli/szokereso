@@ -89,6 +89,11 @@ class App {
         document.getElementById("menu").style.display = "none";
         document.getElementById("results").style.display = "none";
         document.getElementById("game").style.display = "block";
+        // document.getElementById("timer").style.display = "block";
+        document.getElementById("standing").style.display = "block";
+        document.getElementById("timeLeftPar").style.display = "block";
+        document.getElementById("timeIsUp").style.display = "none";
+        document.getElementById("stopButton").style.display = "block";
     }
     // Called by the game manager, when the game ends (either by out of time or by clicking
     // the 'give up' button).
@@ -96,9 +101,12 @@ class App {
         this.state = AppState.FINISHED_PLAYING;
         // TODO change ui
         document.getElementById("board").className += " unplayable"; // kell?
-        document.getElementById("gameplay").style.display = "none";
-        document.getElementById("timer").style.display = "none";
-        document.getElementById("results").style.display = "inline";
+        // document.getElementById("standing").style.display = "none";
+        // document.getElementById("timer").style.display = "none";
+        document.getElementById("timeLeftPar").style.display = "none";
+        document.getElementById("timeIsUp").style.display = "block";
+        document.getElementById("results").style.display = "block";
+        document.getElementById("stopButton").style.display = "none";
     }
     backToMenuPressed(self, event) {
         console.log("App.backPressed");
@@ -108,6 +116,8 @@ class App {
         document.getElementById("menu").style.display = "block";
         document.getElementById("results").style.display = "none";
         document.getElementById("game").style.display = "none";
+        document.getElementById("standing").style.display = "none";
+        // document.getElementById("timer").style.display = "none";
     }
     bodyTouchMove(self, event) {
         if (self.state == AppState.PLAYING) {
@@ -133,9 +143,11 @@ class Board {
         let board = new Board(boardObj.size, boardObj.timeSeconds);
         for (var prop in boardObj)
             board[prop] = boardObj[prop];
+        board.setScoreFromWords();
         return board;
     }
     setWords(words) {
+        console.log("setWords");
         this.words = new Array();
         for (let word of words) {
             this.words.push(word);
@@ -144,6 +156,7 @@ class Board {
         this.setScoreFromWords();
     }
     setScoreFromWords() {
+        console.log("setScoreFromWords");
         this.totalScore = 0;
         for (let word of this.words) {
             this.totalScore += Board.getWordScore(word);
@@ -177,6 +190,7 @@ class Board {
 }
 class BoardGenerator {
     constructor(vocabulary) {
+        var _a;
         this.Cell = (_a = class Cell {
                 constructor(row, col, prevLo, prevHi, prefix, vocab) {
                     this.row = row;
@@ -250,7 +264,6 @@ class BoardGenerator {
         vocabulary.sort();
         this.vocab = vocabulary;
         this.getLetterFreqs();
-        var _a;
     }
     generateBoard(size, timeSeconds, scoreThreshold) {
         while (true) {
@@ -317,6 +330,7 @@ class BoardGenerator {
             }
         }
         board.setWords(words);
+        board.setScoreFromWords();
         let allCovered = true;
         for (let row of covered) {
             for (let element of row) {
@@ -499,6 +513,9 @@ class GameManager {
         if (self.timeRemaining <= 0) {
             self.game.disable();
             clearInterval(self.timer);
+            self.ui.displayAllWords(self.board.words);
+            console.log("Total score: " + String(self.board.totalScore));
+            self.ui.displayTotalScore(self.board.totalScore);
             self.app.gameOver();
         }
     }
@@ -544,6 +561,13 @@ class GameUI {
         this.foundWords.push(word);
         this.foundWords.sort();
         document.getElementById("found").innerHTML = this.foundWords.join(" ");
+    }
+    displayAllWords(words) {
+        document.getElementById("allWords").innerHTML =
+            words.join(", ");
+    }
+    displayTotalScore(totalScore) {
+        document.getElementById("totalScore").innerHTML = String(totalScore);
     }
 }
 class Sheet {

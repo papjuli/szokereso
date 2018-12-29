@@ -23,10 +23,12 @@ class Board {
     let boardObj = JSON.parse(boardJson);
     let board = new Board(boardObj.size, boardObj.timeSeconds);
     for (var prop in boardObj) board[prop] = boardObj[prop];
+    board.setScoreFromWords();
     return board;
   }
 
   public setWords(words: Set<string>): void {
+    console.log("setWords");
     this.words = new Array<string>();
     for (let word of words) {
       this.words.push(word);
@@ -36,6 +38,7 @@ class Board {
   }
   
   public setScoreFromWords(): void {
+    console.log("setScoreFromWords");
     this.totalScore = 0;
     for (let word of this.words) {
       this.totalScore += Board.getWordScore(word);
