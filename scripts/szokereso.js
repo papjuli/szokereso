@@ -405,14 +405,14 @@ class Game {
         return [elem, [Number(elem.dataset.row), Number(elem.dataset.col)]];
     }
     addLetter(target) {
-        this.selectedLetters.push(target[1]);
+        this.selectedLetters.push(target);
         target[0].classList.add("marked");
         this.word += this.board.letters[target[1][0]][target[1][1]];
         this.manager.partialWord(this.word);
     }
     removeLetter(target) {
-        this.selectedLetters.pop();
-        target[0].classList.remove("marked");
+        let lastLetter = this.selectedLetters.pop();
+        lastLetter[0].classList.remove("marked");
         this.word = this.word.substring(0, this.word.length - 1);
         this.manager.partialWord(this.word);
     }
@@ -438,8 +438,8 @@ class Game {
         let nLetters = self.selectedLetters.length;
         // When moving back to the penultimate letter, remove the last letter.
         if (nLetters > 1) {
-            if (target[1][0] == self.selectedLetters[nLetters - 2][0] &&
-                target[1][1] == self.selectedLetters[nLetters - 2][1]) {
+            if (target[1][0] == self.selectedLetters[nLetters - 2][1][0] &&
+                target[1][1] == self.selectedLetters[nLetters - 2][1][1]) {
                 self.removeLetter(target);
                 return;
             }
@@ -447,12 +447,12 @@ class Game {
         // If the currently touched letter has already been selected, don't
         // select it again.
         for (let selectedLetter of self.selectedLetters) {
-            if (target[1][0] == selectedLetter[0] && target[1][1] == selectedLetter[1]) {
+            if (target[1][0] == selectedLetter[1][0] && target[1][1] == selectedLetter[1][1]) {
                 return;
             }
         }
-        let dx = target[1][0] - self.selectedLetters[nLetters - 1][0];
-        let dy = target[1][1] - self.selectedLetters[nLetters - 1][1];
+        let dx = target[1][0] - self.selectedLetters[nLetters - 1][1][0];
+        let dy = target[1][1] - self.selectedLetters[nLetters - 1][1][1];
         let d = dx * dx + dy * dy;
         // If the user still touches the last letter, do nothing.
         if (d == 0)
