@@ -507,7 +507,7 @@ class GameManager {
     }
     finalWord(word) {
         this.ui.setCurrentGuess("");
-        // TODO: update UI
+        let kind = "Incorrect";
         if (this.board.words.indexOf(word) >= 0) {
             this.score += Board.getWordScore(word);
             let len = word.length;
@@ -519,7 +519,9 @@ class GameManager {
             this.ui.setScore(this.score);
             this.ui.setWordRemaining(this.remainingWords);
             this.ui.addFoundWord(word);
+            kind = "Correct";
         }
+        this.ui.setFinalGuess(word, kind);
     }
 }
 class GameUI {
@@ -530,6 +532,11 @@ class GameUI {
     }
     setCurrentGuess(word) {
         document.getElementById("currentWord").innerHTML = word;
+        document.getElementById("guessedWord").className = "guessedWordHidden";
+    }
+    setFinalGuess(word, kind) {
+        document.getElementById("guessedWord").innerHTML = word;
+        document.getElementById("guessedWord").className = "guessedWord" + kind;
     }
     setScore(score) {
         document.getElementById("score").innerHTML = String(score);

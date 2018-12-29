@@ -36,6 +36,49 @@ button {
   background-color: blue;
 }
 
+.guessedWordHidden {
+  position: absolute;
+  display: none;
+}
+
+@keyframes guessedWordAnimation {
+  from {
+    margin-left: 0px;
+    opacity: 1;
+  }
+  to {
+    margin-left: 100px;
+    opacity: 0;
+  }
+}
+
+.guessedWordCorrect {
+  position: absolute;
+  display: block;
+  color: green;
+  animation-name: guessedWordAnimation;
+  animation-duration: 2s;
+  animation-fill-mode: forwards;
+}
+
+.guessedWordIncorrect {
+  position: absolute;
+  display: block;
+  color: red;
+  animation-name: guessedWordAnimation;
+  animation-duration: 2s;
+  animation-fill-mode: forwards;
+}
+
+.guessedWordDuplicate {
+  position: absolute;
+  display: block;
+  color: orange;
+  animation-name: guessedWordAnimation;
+  animation-duration: 2s;
+  animation-fill-mode: forwards;
+}
+
 #game {
   display: none;
 }
