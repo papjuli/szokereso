@@ -64,8 +64,6 @@ class GameManager {
     public endGame(self): void {
         self.game.disable();
         clearInterval(self.timer);
-        self.displayAllWords(self.board.words);
-        self.displayTotalScore(self.board.totalScore);
         self.app.gameOver();
     }
 
@@ -105,17 +103,76 @@ class GameManager {
         document.getElementById("found").innerHTML = this.foundWords.join(" ");
     }
 
-    public displayAllWords(words: string[]): void {
-        document.getElementById("allWords").innerHTML = 
-            words.join(", ");
+    private sign(color: string): string {
+        return "<font color=\"" + color + "\">●</font>";
     }
 
-    public displayTotalScore(totalScore: number): void {
-        document.getElementById("totalScore").innerHTML = String(totalScore);
+    public displayAllWords(userStates: UserState[]): void {
+        let result = "";
+        let myState: UserState = null;
+        let othersStates = new Array<UserState>();
+        let allStates = new Array<UserState>();
+        for (let state of userStates) {
+            allStates.push(state);
+            if (state.email == myEmailAddress()) {
+                myState = state;
+            } else {
+                othersStates.push(state);
+            }
+        }
+        let foundWordColor = "black";
+        let notFoundWordColor = "darkGrey";
+        let myColor = "blue";
+        let othersColors = ["red", "green", "orange", "purple", "brown"];
+        allStates.sort((a, b) => b.score - a.score);
+        for (let state of allStates) {
+            let color = myColor;
+            if (othersStates.indexOf(state) >= 0) {
+                color = othersColors[othersStates.indexOf(state)];
+            }
+            result += state.email + this.sign(color) + " " +
+                String(state.score) + "/" + String(this.board.totalScore) + "<br>";
+        }
+        for (let word of this.board.words) {
+            let finders = "";
+            let found = false;
+            if (myState.foundWords.indexOf(word) >= 0) {
+                console.log("Found");
+                found = true;
+                finders += this.sign(myColor);
+            }
+            for (let i = 0; i < othersStates.length; ++i) {
+                if (othersStates[i].foundWords.indexOf(word) >= 0) {
+                    found = true;
+                    finders += this.sign(othersColors[i]);
+                }
+            }
+            let renderedWord = "<span>";
+            if (found) {
+                renderedWord += "<font color=\"" + foundWordColor + "\">" + word + "</font>";
+                renderedWord += finders;
+            } else {
+                renderedWord += "<font color=\"" + notFoundWordColor + "\">" + word + "</font>";
+            }
+            renderedWord += " </span>";
+            result += renderedWord;
+        }
+        document.getElementById("allWords").innerHTML = result;
     }
 
     public updateUser(user: UserState): void {
         user.score = this.score;
         user.foundWords = this.foundWords;
+    }
+
+    public renderUserStates(userStates: UserState[]): void {
+        // TODO remove all this once we get real results.
+        let otherUser = new UserState("Someone Else", "other@email.com");
+        otherUser.score = 5;
+        otherUser.foundWords = [this.foundWords[0], this.foundWords[1]];
+        let anotherUser = new UserState("Someone Other", "another@email.com");
+        anotherUser.score = 3;
+        anotherUser.foundWords = [this.foundWords[0]];
+        this.displayAllWords([userStates[0], anotherUser, otherUser]);
     }
 }

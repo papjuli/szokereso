@@ -136,6 +136,8 @@ class App {
         console.log("App.gameOver");
         this.state = AppState.FINISHED_PLAYING;
         this.gameManager.updateUser(this.user);
+        this.gameManager.renderUserStates([this.user]);
+        // TODO also call when refresh results is called.
         this.sheet.addUserStateToCurrentBoard(this.user);
         document.getElementById("board").classList.add("unplayable"); // kell?
         document.getElementById("timeLeftPar").style.display = "none";

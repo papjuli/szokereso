@@ -108,6 +108,8 @@ class App {
         console.log("App.gameOver");
         this.state = AppState.FINISHED_PLAYING;
         this.gameManager.updateUser(this.user);
+        this.gameManager.renderUserStates([this.user]);
+        // TODO also call when refresh results is called.
         this.sheet.addUserStateToCurrentBoard(this.user);
         document.getElementById("board").classList.add("unplayable"); // kell?
         document.getElementById("timeLeftPar").style.display = "none";
@@ -197,7 +199,6 @@ class Board {
 }
 class BoardGenerator {
     constructor(vocabulary) {
-        var _a;
         this.Cell = (_a = class Cell {
                 constructor(row, col, prevLo, prevHi, prefix, vocab) {
                     this.row = row;
@@ -271,6 +272,7 @@ class BoardGenerator {
         vocabulary.sort();
         this.vocab = vocabulary;
         this.getLetterFreqs();
+        var _a;
     }
     generateBoard(size, timeSeconds, scoreThreshold) {
         while (true) {
@@ -576,8 +578,6 @@ class GameManager {
     endGame(self) {
         self.game.disable();
         clearInterval(self.timer);
-        self.displayAllWords(self.board.words);
-        self.displayTotalScore(self.board.totalScore);
         self.app.gameOver();
     }
     rotateBoard(self) {
@@ -609,16 +609,76 @@ class GameManager {
         this.foundWords.sort();
         document.getElementById("found").innerHTML = this.foundWords.join(" ");
     }
-    displayAllWords(words) {
-        document.getElementById("allWords").innerHTML =
-            words.join(", ");
+    sign(color) {
+        return "<font color=\"" + color + "\">●</font>";
     }
-    displayTotalScore(totalScore) {
-        document.getElementById("totalScore").innerHTML = String(totalScore);
+    displayAllWords(userStates) {
+        let result = "";
+        let myState = null;
+        let othersStates = new Array();
+        let allStates = new Array();
+        for (let state of userStates) {
+            allStates.push(state);
+            if (state.email == myEmailAddress()) {
+                myState = state;
+            }
+            else {
+                othersStates.push(state);
+            }
+        }
+        let foundWordColor = "black";
+        let notFoundWordColor = "darkGrey";
+        let myColor = "blue";
+        let othersColors = ["red", "green", "orange", "purple", "brown"];
+        allStates.sort((a, b) => b.score - a.score);
+        for (let state of allStates) {
+            let color = myColor;
+            if (othersStates.indexOf(state) >= 0) {
+                color = othersColors[othersStates.indexOf(state)];
+            }
+            result += state.email + this.sign(color) + " " +
+                String(state.score) + "/" + String(this.board.totalScore) + "<br>";
+        }
+        for (let word of this.board.words) {
+            let finders = "";
+            let found = false;
+            if (myState.foundWords.indexOf(word) >= 0) {
+                console.log("Found");
+                found = true;
+                finders += this.sign(myColor);
+            }
+            for (let i = 0; i < othersStates.length; ++i) {
+                if (othersStates[i].foundWords.indexOf(word) >= 0) {
+                    found = true;
+                    finders += this.sign(othersColors[i]);
+                }
+            }
+            let renderedWord = "<span>";
+            if (found) {
+                renderedWord += "<font color=\"" + foundWordColor + "\">" + word + "</font>";
+                renderedWord += finders;
+            }
+            else {
+                renderedWord += "<font color=\"" + notFoundWordColor + "\">" + word + "</font>";
+            }
+            renderedWord += " </span>";
+            result += renderedWord;
+        }
+        document.getElementById("allWords").innerHTML = result;
     }
     updateUser(user) {
         user.score = this.score;
         user.foundWords = this.foundWords;
+    }
+    renderUserStates(userStates) {
+        // TODO remove all this once we get real results.
+        let otherUser = new UserState("Someone Else", "other@email.com");
+        otherUser.score = 5;
+        otherUser.foundWords = [this.foundWords[0], this.foundWords[1]];
+        let anotherUser = new UserState("Someone Other", "another@email.com");
+        anotherUser.score = 3;
+        anotherUser.foundWords = [this.foundWords[0]];
+        this.displayAllWords([userStates[0], anotherUser, otherUser]);
     }
 }
 class Sheet {
