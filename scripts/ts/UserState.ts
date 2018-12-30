@@ -1,3 +1,5 @@
+declare function getUserProfile(): any;
+
 class UserState {
   public name: string;
   public email: string;

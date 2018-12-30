@@ -22,20 +22,19 @@ enum AppState {
 
 class App {
     private sheet: Sheet;
-
     private state: AppState;
-
     private boardGenerator: BoardGenerator;
-
     private gameManager: GameManager;
+    private user: UserState;
 
-    constructor(vocabulary) {
-        // TODO: add event listeners here
-        // TODO: use real vocabulary
+    constructor(vocabulary, gUserProfile) {
         this.boardGenerator = new BoardGenerator(vocabulary);
         this.sheet = new Sheet(this);
         this.sheet.loadLastRow();
         this.showStartPage();
+
+        this.user = new UserState(gUserProfile.getName(), gUserProfile.getEmail());
+        console.log(this.user);
 
         document.getElementById("createGameButton").addEventListener(
             "click", (event) => this.createGamePressed(this, event));
@@ -80,7 +79,7 @@ class App {
         console.log("App.createGamePressed");
 
         let board = self.boardGenerator.generateBoard(
-            this.getValue("howBig"), this.getValue("howLong"), this.getValue("minimumScore"))
+            this.getValue("howBig"), this.getValue("howLong"), this.getValue("minimumScore"));
         self.sheet.addNewBoard(board);
         self.showReadyToPlay();
     }
@@ -134,7 +133,10 @@ class App {
     // Called by the game manager, when the game ends (either by out of time or by clicking
     // the 'give up' button).
     public gameOver(): void {
+        console.log("App.gameOver");
         this.state = AppState.FINISHED_PLAYING;
+        this.gameManager.updateUser(this.user);
+        this.sheet.addUserStateToCurrentBoard(this.user);
         document.getElementById("board").classList.add("unplayable"); // kell?
         document.getElementById("timeLeftPar").style.display = "none";
         document.getElementById("timeIsUp").style.display = "block";

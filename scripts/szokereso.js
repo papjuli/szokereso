@@ -18,13 +18,13 @@ var AppState;
     AppState[AppState["FINISHED_PLAYING"] = 3] = "FINISHED_PLAYING";
 })(AppState || (AppState = {}));
 class App {
-    constructor(vocabulary) {
-        // TODO: add event listeners here
-        // TODO: use real vocabulary
+    constructor(vocabulary, gUserProfile) {
         this.boardGenerator = new BoardGenerator(vocabulary);
         this.sheet = new Sheet(this);
         this.sheet.loadLastRow();
         this.showStartPage();
+        this.user = new UserState(gUserProfile.getName(), gUserProfile.getEmail());
+        console.log(this.user);
         document.getElementById("createGameButton").addEventListener("click", (event) => this.createGamePressed(this, event));
         document.getElementById("startGameButton").addEventListener("click", (event) => this.startGamePressed(this, event));
         document.getElementById("playLastGameButton").addEventListener("click", (event) => this.startGamePressed(this, event));
@@ -105,7 +105,10 @@ class App {
     // Called by the game manager, when the game ends (either by out of time or by clicking
     // the 'give up' button).
     gameOver() {
+        console.log("App.gameOver");
         this.state = AppState.FINISHED_PLAYING;
+        this.gameManager.updateUser(this.user);
+        this.sheet.addUserStateToCurrentBoard(this.user);
         document.getElementById("board").classList.add("unplayable"); // kell?
         document.getElementById("timeLeftPar").style.display = "none";
         document.getElementById("timeIsUp").style.display = "block";
@@ -613,6 +616,10 @@ class GameManager {
     displayTotalScore(totalScore) {
         document.getElementById("totalScore").innerHTML = String(totalScore);
     }
+    updateUser(user) {
+        user.score = this.score;
+        user.foundWords = this.foundWords;
+    }
 }
 class Sheet {
     constructor(app) {
@@ -655,14 +662,18 @@ class Sheet {
     }
     // Used when I am ready playing a board and want to store my results to the sheet.
     addUserStateToCurrentBoard(user) {
-        loadAllRows().then((response) => this.appendUserState(this.currentRowIndex, user, response));
+        loadAllRows().then((response) => this.appendUserState(user, response));
     }
-    appendUserState(rowIndex, user, values) {
+    appendUserState(user, response) {
         // The column to store into is the one one after the last column set, so eg. if two
         // players have already stored their results, then A123 contains the board, 
         // B123 and C123 contain the results of those players and we want to write to D123.
-        let col = String.fromCharCode("A".charCodeAt(0) + values[rowIndex].length + 1);
-        updateSheet(col + String(1 + rowIndex), user.asJson());
+        var values = response.result.values;
+        let rowIndex = this.currentRowIndex;
+        let col = String.fromCharCode("A".charCodeAt(0) + values[rowIndex].length);
+        console.log("games!" + col + String(1 + rowIndex));
+        console.log(user.asJson());
+        updateSheet("games!" + col + String(1 + rowIndex), user.asJson());
     }
     // Used when a new board is created.
     addNewBoard(board) {
@@ -670,9 +681,9 @@ class Sheet {
     }
     appendNewBoard(board, response) {
         var values = response.result.values;
-        this.currentRowIndex = values.length - 1;
         this.currentRow = new SheetRow(board, []);
-        updateSheet("games!A" + (2 + this.currentRowIndex), board.asJson());
+        this.currentRowIndex = values.length;
+        updateSheet("games!A" + (values.length + 1), board.asJson());
     }
 }
 class SheetRow {

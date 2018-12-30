@@ -28,7 +28,7 @@ function signedIn(googleUser) {
   document.getElementById("whoami").innerHTML = profile.getEmail() + " " + profile.getName();
   document.getElementById("signin-button").style.display = "none";
   document.getElementById("signout-button").style.display = "inline";
-  app = new App(hungarian_vocabulary.words);
+  app = new App(hungarian_vocabulary.words, profile);
 }
 
 function signedOut() {
@@ -71,14 +71,10 @@ function updateSheet(range, value) {
         [value],
       ],
     }
-  }).then(function(err, result) {
-    if(err) {
-      // Handle error
-      console.log(err);
-    } else {
-      console.log('%d cells updated.', result.updatedCells);
-    }
-  });
+  }).then(
+    (response) => { console.log('%d cells updated.', response.result.updatedCells); },
+    (err) => { console.log("Coulnd't update sheet: " + String(err)); }
+  );
 }
 
 // nem kell

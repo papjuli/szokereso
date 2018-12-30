@@ -50,15 +50,19 @@ class Sheet {
     // Used when I am ready playing a board and want to store my results to the sheet.
     public addUserStateToCurrentBoard(user: UserState): void {
         loadAllRows().then((response) => this.appendUserState(
-            this.currentRowIndex, user, response));
+            user, response));
     }
 
-    private appendUserState(rowIndex: number, user: UserState, values: any): void {
+    private appendUserState(user: UserState, response: any): void {
         // The column to store into is the one one after the last column set, so eg. if two
         // players have already stored their results, then A123 contains the board, 
         // B123 and C123 contain the results of those players and we want to write to D123.
-        let col = String.fromCharCode("A".charCodeAt(0) + values[rowIndex].length + 1);
-        updateSheet(col + String(1 + rowIndex), user.asJson());
+        var values = response.result.values;
+        let rowIndex = this.currentRowIndex;
+        let col = String.fromCharCode("A".charCodeAt(0) + values[rowIndex].length);
+        console.log("games!" + col + String(1 + rowIndex));
+        console.log(user.asJson());
+        updateSheet("games!" + col + String(1 + rowIndex), user.asJson());
     }
 
     // Used when a new board is created.
@@ -69,8 +73,8 @@ class Sheet {
 
     private appendNewBoard(board: Board, response: any): void {
         var values = response.result.values;
-        this.currentRowIndex = values.length - 1;
         this.currentRow = new SheetRow(board, []);
-        updateSheet("games!A" + (2 + this.currentRowIndex), board.asJson());
+        this.currentRowIndex = values.length;
+        updateSheet("games!A" + (values.length + 1), board.asJson());
     }
 }

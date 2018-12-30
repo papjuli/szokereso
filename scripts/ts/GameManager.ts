@@ -113,4 +113,9 @@ class GameManager {
     public displayTotalScore(totalScore: number): void {
         document.getElementById("totalScore").innerHTML = String(totalScore);
     }
+
+    public updateUser(user: UserState): void {
+        user.score = this.score;
+        user.foundWords = this.foundWords;
+    }
 }
