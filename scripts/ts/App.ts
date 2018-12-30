@@ -48,7 +48,9 @@ class App {
             "click", () => this.gameManager.endGame(this.gameManager));
         document.getElementById("rotateBoard").addEventListener(
             "click", () => this.gameManager.rotateBoard(this.gameManager));
-            document.body.addEventListener(
+        document.getElementById("refreshResults").addEventListener(
+            "click", () => this.refreshResults(this));
+        document.body.addEventListener(
             "touchmove", (event) => this.bodyTouchMove(this, event), {passive: false});
 
         console.log("App created");
@@ -77,7 +79,6 @@ class App {
     // This should be the event listener of the create game button.
     public createGamePressed(self: App, event: Event): void {
         console.log("App.createGamePressed");
-
         let board = self.boardGenerator.generateBoard(
             this.getValue("howBig"), this.getValue("howLong"), this.getValue("minimumScore"));
         self.sheet.addNewBoard(board);
@@ -86,7 +87,6 @@ class App {
 
     private showStartPage(): void {
         this.state = AppState.START_PAGE;
-        // TODO change ui
         document.getElementById("menu").style.display = "block";
         document.getElementById("readyToPlay").style.display = "none";
         document.getElementById("results").style.display = "none";
@@ -94,14 +94,13 @@ class App {
     }
 
     private showLastGameResults(): void {
-        // TODO
         document.getElementById("playLastGameButton").style.display = "none";
         document.getElementById("lastGameResults").style.display = "block";
-        document.getElementById("lastGameResults").innerHTML = String(this.sheet.getCurrentGamesPlayers());
+        // TODO
+        // document.getElementById("lastGameResults").innerHTML = String(this.sheet.getCurrentGamesPlayers(false));
     }
 
     private showJoinLastGameButton(): void {
-        // TODO
         console.log("showJoinLastGameButton");
         document.getElementById("playLastGameButton").style.display = "block";
         document.getElementById("lastGameResults").style.display = "none";
@@ -136,14 +135,20 @@ class App {
         console.log("App.gameOver");
         this.state = AppState.FINISHED_PLAYING;
         this.gameManager.updateUser(this.user);
-        this.gameManager.renderUserStates([this.user]);
-        // TODO also call when refresh results is called.
-        this.sheet.addUserStateToCurrentBoard(this.user);
+        this.sheet.addUserStateToCurrentBoard(this.user, (response) => {
+            this.refreshResults(this);
+        });
         document.getElementById("board").classList.add("unplayable"); // kell?
         document.getElementById("timeLeftPar").style.display = "none";
         document.getElementById("timeIsUp").style.display = "block";
         document.getElementById("results").style.display = "block";
         document.getElementById("stopButton").style.display = "none";
+    }
+
+    public refreshResults(self: App): void {
+        let users = this.sheet.getCurrentGamesPlayers(true);
+        console.log(users);
+        self.gameManager.renderUserStates(users);
     }
 
     public backToMenuPressed(self: App, event: Event): void {

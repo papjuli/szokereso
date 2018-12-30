@@ -1,5 +1,5 @@
 declare function loadAllRows(): any;
-declare function updateSheet(range: string, value: string): void;
+declare function updateSheet(range: string, value: string, callback: (response) => void): void;
 
 class Sheet {
     private currentRow: SheetRow;
@@ -38,7 +38,12 @@ class Sheet {
 
     public getCurrentRowIndex(): number { return this.currentRowIndex; }
 
-    public getCurrentGamesPlayers(): UserState[] { return this.currentRow.getUsers(); }
+    public getCurrentGamesPlayers(reload: boolean): UserState[] {
+        if (reload) {
+            this.reloadCurrentRow();
+        }
+        return this.currentRow.getUsers();
+    }
 
     public didIPlayOnCurrentBoard(): boolean {
         for (let user of this.currentRow.getUsers()) {
@@ -48,12 +53,12 @@ class Sheet {
     }
 
     // Used when I am ready playing a board and want to store my results to the sheet.
-    public addUserStateToCurrentBoard(user: UserState): void {
+    public addUserStateToCurrentBoard(user: UserState, callback: any): void {
         loadAllRows().then((response) => this.appendUserState(
-            user, response));
+            user, response, callback));
     }
 
-    private appendUserState(user: UserState, response: any): void {
+    private appendUserState(user: UserState, response: any, callback: any): void {
         // The column to store into is the one one after the last column set, so eg. if two
         // players have already stored their results, then A123 contains the board, 
         // B123 and C123 contain the results of those players and we want to write to D123.
@@ -62,7 +67,7 @@ class Sheet {
         let col = String.fromCharCode("A".charCodeAt(0) + values[rowIndex].length);
         console.log("games!" + col + String(1 + rowIndex));
         console.log(user.asJson());
-        updateSheet("games!" + col + String(1 + rowIndex), user.asJson());
+        updateSheet("games!" + col + String(1 + rowIndex), user.asJson(), callback);
     }
 
     // Used when a new board is created.
@@ -75,6 +80,6 @@ class Sheet {
         var values = response.result.values;
         this.currentRow = new SheetRow(board, []);
         this.currentRowIndex = values.length;
-        updateSheet("games!A" + (values.length + 1), board.asJson());
+        updateSheet("games!A" + (values.length + 1), board.asJson(), null);
     }
 }

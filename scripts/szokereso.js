@@ -31,6 +31,7 @@ class App {
         document.getElementById("menuButton").addEventListener("click", (event) => this.backToMenuPressed(this, event));
         document.getElementById("stopButton").addEventListener("click", () => this.gameManager.endGame(this.gameManager));
         document.getElementById("rotateBoard").addEventListener("click", () => this.gameManager.rotateBoard(this.gameManager));
+        document.getElementById("refreshResults").addEventListener("click", () => this.refreshResults(this));
         document.body.addEventListener("touchmove", (event) => this.bodyTouchMove(this, event), { passive: false });
         console.log("App created");
     }
@@ -63,20 +64,18 @@ class App {
     }
     showStartPage() {
         this.state = AppState.START_PAGE;
-        // TODO change ui
         document.getElementById("menu").style.display = "block";
         document.getElementById("readyToPlay").style.display = "none";
         document.getElementById("results").style.display = "none";
         document.getElementById("game").style.display = "none";
     }
     showLastGameResults() {
-        // TODO
         document.getElementById("playLastGameButton").style.display = "none";
         document.getElementById("lastGameResults").style.display = "block";
-        document.getElementById("lastGameResults").innerHTML = String(this.sheet.getCurrentGamesPlayers());
+        // TODO
+        // document.getElementById("lastGameResults").innerHTML = String(this.sheet.getCurrentGamesPlayers(false));
     }
     showJoinLastGameButton() {
-        // TODO
         console.log("showJoinLastGameButton");
         document.getElementById("playLastGameButton").style.display = "block";
         document.getElementById("lastGameResults").style.display = "none";
@@ -108,14 +107,19 @@ class App {
         console.log("App.gameOver");
         this.state = AppState.FINISHED_PLAYING;
         this.gameManager.updateUser(this.user);
-        this.gameManager.renderUserStates([this.user]);
-        // TODO also call when refresh results is called.
-        this.sheet.addUserStateToCurrentBoard(this.user);
+        this.sheet.addUserStateToCurrentBoard(this.user, (response) => {
+            this.refreshResults(this);
+        });
         document.getElementById("board").classList.add("unplayable"); // kell?
         document.getElementById("timeLeftPar").style.display = "none";
         document.getElementById("timeIsUp").style.display = "block";
         document.getElementById("results").style.display = "block";
         document.getElementById("stopButton").style.display = "none";
+    }
+    refreshResults(self) {
+        let users = this.sheet.getCurrentGamesPlayers(true);
+        console.log(users);
+        self.gameManager.renderUserStates(users);
     }
     backToMenuPressed(self, event) {
         console.log("App.backPressed");
@@ -199,6 +203,7 @@ class Board {
 }
 class BoardGenerator {
     constructor(vocabulary) {
+        var _a;
         this.Cell = (_a = class Cell {
                 constructor(row, col, prevLo, prevHi, prefix, vocab) {
                     this.row = row;
@@ -272,7 +277,6 @@ class BoardGenerator {
         vocabulary.sort();
         this.vocab = vocabulary;
         this.getLetterFreqs();
-        var _a;
     }
     generateBoard(size, timeSeconds, scoreThreshold) {
         while (true) {
@@ -613,6 +617,7 @@ class GameManager {
         return "<font color=\"" + color + "\">●</font>";
     }
     displayAllWords(userStates) {
+        console.log(userStates);
         let result = "";
         let myState = null;
         let othersStates = new Array();
@@ -643,13 +648,15 @@ class GameManager {
             let finders = "";
             let found = false;
             let someoneMissed = false;
-            if (myState.foundWords.indexOf(word) >= 0) {
-                console.log("Found");
-                found = true;
-                finders += this.sign(myColor);
-            }
-            else {
-                someoneMissed = true;
+            if (myState) {
+                if (myState.foundWords.indexOf(word) >= 0) {
+                    console.log("Found");
+                    found = true;
+                    finders += this.sign(myColor);
+                }
+                else {
+                    someoneMissed = true;
+                }
             }
             for (let i = 0; i < othersStates.length; ++i) {
                 if (othersStates[i].foundWords.indexOf(word) >= 0) {
@@ -682,13 +689,13 @@ class GameManager {
     }
     renderUserStates(userStates) {
         // TODO remove all this once we get real results.
-        let otherUser = new UserState("Someone Else", "other@email.com");
-        otherUser.score = 5;
-        otherUser.foundWords = [this.foundWords[0], this.foundWords[1]];
-        let anotherUser = new UserState("Someone Other", "another@email.com");
-        anotherUser.score = 3;
-        anotherUser.foundWords = [this.foundWords[0], this.foundWords[2]];
-        this.displayAllWords([userStates[0], anotherUser, otherUser]);
+        // let otherUser = new UserState("Someone Else", "other@email.com");
+        // otherUser.score = 5;
+        // otherUser.foundWords = [this.foundWords[0], this.foundWords[1]];
+        // let anotherUser = new UserState("Someone Other", "another@email.com");
+        // anotherUser.score = 3;
+        // anotherUser.foundWords = [this.foundWords[0], this.foundWords[2]];
+        this.displayAllWords(userStates);
     }
 }
 class Sheet {
@@ -722,7 +729,12 @@ class Sheet {
     }
     currentBoard() { return this.currentRow.getBoard(); }
     getCurrentRowIndex() { return this.currentRowIndex; }
-    getCurrentGamesPlayers() { return this.currentRow.getUsers(); }
+    getCurrentGamesPlayers(reload) {
+        if (reload) {
+            this.reloadCurrentRow();
+        }
+        return this.currentRow.getUsers();
+    }
     didIPlayOnCurrentBoard() {
         for (let user of this.currentRow.getUsers()) {
             if (user.email == myEmailAddress())
@@ -731,10 +743,10 @@ class Sheet {
         return false;
     }
     // Used when I am ready playing a board and want to store my results to the sheet.
-    addUserStateToCurrentBoard(user) {
-        loadAllRows().then((response) => this.appendUserState(user, response));
+    addUserStateToCurrentBoard(user, callback) {
+        loadAllRows().then((response) => this.appendUserState(user, response, callback));
     }
-    appendUserState(user, response) {
+    appendUserState(user, response, callback) {
         // The column to store into is the one one after the last column set, so eg. if two
         // players have already stored their results, then A123 contains the board, 
         // B123 and C123 contain the results of those players and we want to write to D123.
@@ -743,7 +755,7 @@ class Sheet {
         let col = String.fromCharCode("A".charCodeAt(0) + values[rowIndex].length);
         console.log("games!" + col + String(1 + rowIndex));
         console.log(user.asJson());
-        updateSheet("games!" + col + String(1 + rowIndex), user.asJson());
+        updateSheet("games!" + col + String(1 + rowIndex), user.asJson(), callback);
     }
     // Used when a new board is created.
     addNewBoard(board) {
@@ -753,7 +765,7 @@ class Sheet {
         var values = response.result.values;
         this.currentRow = new SheetRow(board, []);
         this.currentRowIndex = values.length;
-        updateSheet("games!A" + (values.length + 1), board.asJson());
+        updateSheet("games!A" + (values.length + 1), board.asJson(), null);
     }
 }
 class SheetRow {

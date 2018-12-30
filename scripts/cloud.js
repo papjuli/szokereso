@@ -61,7 +61,7 @@ function loadAllRows() {
 }
 
 // kell
-function updateSheet(range, value) {
+function updateSheet(range, value, callback) {
   gapi.client.sheets.spreadsheets.values.update({
     spreadsheetId: '1u9w_rAWrPBUnmQ_G4TYvnIEDifVQg4HWKhbqvFET2Yk',
     range: range,
@@ -72,7 +72,14 @@ function updateSheet(range, value) {
       ],
     }
   }).then(
-    (response) => { console.log('%d cells updated.', response.result.updatedCells); },
+    (response) => {
+      console.log('%d cells updated.', response.result.updatedCells);
+      if (callback) {
+        console.log("updateSheet called callback");
+        console.log(response);
+        callback(response);
+      }
+    },
     (err) => { console.log("Coulnd't update sheet: " + String(err)); }
   );
 }

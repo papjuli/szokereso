@@ -108,6 +108,7 @@ class GameManager {
     }
 
     public displayAllWords(userStates: UserState[]): void {
+        console.log(userStates);
         let result = "";
         let myState: UserState = null;
         let othersStates = new Array<UserState>();
@@ -137,12 +138,14 @@ class GameManager {
             let finders = "";
             let found = false;
             let someoneMissed = false;
-            if (myState.foundWords.indexOf(word) >= 0) {
-                console.log("Found");
-                found = true;
-                finders += this.sign(myColor);
-            } else {
-                someoneMissed = true;
+            if (myState) {
+                if (myState.foundWords.indexOf(word) >= 0) {
+                    console.log("Found");
+                    found = true;
+                    finders += this.sign(myColor);
+                } else {
+                    someoneMissed = true;
+                }
             }
             for (let i = 0; i < othersStates.length; ++i) {
                 if (othersStates[i].foundWords.indexOf(word) >= 0) {
@@ -175,12 +178,12 @@ class GameManager {
 
     public renderUserStates(userStates: UserState[]): void {
         // TODO remove all this once we get real results.
-        let otherUser = new UserState("Someone Else", "other@email.com");
-        otherUser.score = 5;
-        otherUser.foundWords = [this.foundWords[0], this.foundWords[1]];
-        let anotherUser = new UserState("Someone Other", "another@email.com");
-        anotherUser.score = 3;
-        anotherUser.foundWords = [this.foundWords[0], this.foundWords[2]];
-        this.displayAllWords([userStates[0], anotherUser, otherUser]);
+        // let otherUser = new UserState("Someone Else", "other@email.com");
+        // otherUser.score = 5;
+        // otherUser.foundWords = [this.foundWords[0], this.foundWords[1]];
+        // let anotherUser = new UserState("Someone Other", "another@email.com");
+        // anotherUser.score = 3;
+        // anotherUser.foundWords = [this.foundWords[0], this.foundWords[2]];
+        this.displayAllWords(userStates);
     }
 }
