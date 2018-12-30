@@ -194,6 +194,7 @@ class Board {
 }
 class BoardGenerator {
     constructor(vocabulary) {
+        var _a;
         this.Cell = (_a = class Cell {
                 constructor(row, col, prevLo, prevHi, prefix, vocab) {
                     this.row = row;
@@ -267,7 +268,6 @@ class BoardGenerator {
         vocabulary.sort();
         this.vocab = vocabulary;
         this.getLetterFreqs();
-        var _a;
     }
     generateBoard(size, timeSeconds, scoreThreshold) {
         while (true) {
@@ -668,10 +668,11 @@ class Sheet {
     addNewBoard(board) {
         loadAllRows().then((response) => this.appendNewBoard(board, response));
     }
-    appendNewBoard(board, values) {
-        this.currentRowIndex = values.length;
+    appendNewBoard(board, response) {
+        var values = response.result.values;
+        this.currentRowIndex = values.length - 1;
         this.currentRow = new SheetRow(board, []);
-        updateSheet("A" + (1 + this.currentRowIndex), board.asJson());
+        updateSheet("games!A" + (2 + this.currentRowIndex), board.asJson());
     }
 }
 class SheetRow {

@@ -67,9 +67,10 @@ class Sheet {
             board, response));
     }
 
-    private appendNewBoard(board: Board, values: any): void {
-        this.currentRowIndex = values.length;
+    private appendNewBoard(board: Board, response: any): void {
+        var values = response.result.values;
+        this.currentRowIndex = values.length - 1;
         this.currentRow = new SheetRow(board, []);
-        updateSheet("A" + (1 + this.currentRowIndex), board.asJson());
+        updateSheet("games!A" + (2 + this.currentRowIndex), board.asJson());
     }
 }
