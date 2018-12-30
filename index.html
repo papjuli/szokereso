@@ -51,8 +51,37 @@
   </p>
 
   <p>
-    <div><button id="createGameButton">New game</button></div>
-  </p>
+    <fieldset>
+      <legend>Create new game</legend>
+      <p>
+        <label for="howLong">Time:</label>
+        <select id="howLong">
+          <option value="60">1 minute</option>
+          <option value="120">2 minutes</option>
+          <option value="180">3 mintues</option>
+          <option value="300" selected=true>5 minutes</option>
+          <option value="600">10 minutes</option>
+        </select>
+      </p>
+      <p>
+        <label for="howBig">Size:</label>
+        <select id="howBig">
+          <option value="3" selected=true>3x3</option>
+          <option value="4">4x4</option>
+          <option value="5">5x5</option>
+        </select>
+      </p>
+      <p>
+        <label for="minimumScore">Minimum score:</label>
+        <select id="minimumScore">
+          <option value="30" selected=true>30</option>
+          <option value="50">50</option>
+          <option value="80">80</option>
+        </select>
+      </p>
+      <p><button id="createGameButton">New game</button></p>
+    </fieldset>
+    </p>
 
 </div>
 

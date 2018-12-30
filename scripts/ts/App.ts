@@ -69,10 +69,18 @@ class App {
         }
     }
 
+    private getValue(id: string): number {
+        let elem = document.getElementById(id);
+        if (!(elem instanceof HTMLSelectElement)) return;
+        return Number(elem.options[elem.selectedIndex].value);
+    }
+
     // This should be the event listener of the create game button.
     public createGamePressed(self: App, event: Event): void {
         console.log("App.createGamePressed");
-        let board = self.boardGenerator.generateBoard(3, 300, 30);
+
+        let board = self.boardGenerator.generateBoard(
+            this.getValue("howBig"), this.getValue("howLong"), this.getValue("minimumScore"))
         self.sheet.addNewBoard(board);
         self.showReadyToPlay();
     }
