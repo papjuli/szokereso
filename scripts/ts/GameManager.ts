@@ -136,16 +136,24 @@ class GameManager {
         for (let word of this.board.words) {
             let finders = "";
             let found = false;
+            let someoneMissed = false;
             if (myState.foundWords.indexOf(word) >= 0) {
                 console.log("Found");
                 found = true;
                 finders += this.sign(myColor);
+            } else {
+                someoneMissed = true;
             }
             for (let i = 0; i < othersStates.length; ++i) {
                 if (othersStates[i].foundWords.indexOf(word) >= 0) {
                     found = true;
                     finders += this.sign(othersColors[i]);
+                } else {
+                    someoneMissed = true;
                 }
+            }
+            if (found && !someoneMissed) {
+                finders = "<font color=\"" + foundWordColor + "\">○</font>";
             }
             let renderedWord = "<span>";
             if (found) {
@@ -172,7 +180,7 @@ class GameManager {
         otherUser.foundWords = [this.foundWords[0], this.foundWords[1]];
         let anotherUser = new UserState("Someone Other", "another@email.com");
         anotherUser.score = 3;
-        anotherUser.foundWords = [this.foundWords[0]];
+        anotherUser.foundWords = [this.foundWords[0], this.foundWords[2]];
         this.displayAllWords([userStates[0], anotherUser, otherUser]);
     }
 }
